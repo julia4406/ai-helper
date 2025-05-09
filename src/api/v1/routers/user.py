@@ -3,9 +3,9 @@ from fastapi import APIRouter
 
 from src.api.dependencies import UserServiceDep
 from src.api.schemas.user import (
-  UserCreateResponseSchema, 
+  UserCreateResponseSchema,
   UserCreateSchema,
-  UserDetailResponseSchema, 
+  UserDetailResponseSchema,
   UserUpdateSchema
   )
 
