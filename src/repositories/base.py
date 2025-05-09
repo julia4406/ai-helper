@@ -1,6 +1,6 @@
 from abc import ABC
 
-from sqlalchemy import insert
+from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -14,7 +14,11 @@ class BaseRepository(ABC):
         pass
 
     async def list(self):
-        pass
+        obj_list_query = await self._session.execute(
+          select(self.model)
+        )
+        obj_list = obj_list_query.scalars().all()
+        return obj_list
 
     async def update(self):
         pass

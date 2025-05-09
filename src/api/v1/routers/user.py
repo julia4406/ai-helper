@@ -23,8 +23,8 @@ async def create_user(
 
 
 @router.get("")
-async def get_all_users():
-    pass
+async def get_all_users(user_service: UserServiceDep):
+    return await user_service.get_list_of_users()
 
 
 @router.get("/{user_id}", response_model=UserDetailResponseSchema)

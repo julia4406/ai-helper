@@ -9,3 +9,6 @@ class UserService:
 
     async def create_new_user(self, user: UserCreateSchema):
         return await self._user_repo.create_new_user(user=user)
+
+    async def get_list_of_users(self):
+        return await self._user_repo.get_list_of_users()
