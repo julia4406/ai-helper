@@ -1,12 +1,15 @@
-from src.api.schemas.user import UserCreateSchema
+from src.database.models.user import User
+from src.repositories.base import BaseRepository
+from src.api.schemas.user import (
+  UserCreateSchema, UserDetailResponseSchema
+  )
 
 
-class UserRepository:
-  model = ...
+class UserRepository(BaseRepository):
+  model = User
 
   async def create_new_user(
-      self,
-      user: UserCreateSchema,
-      
-      ):
-    return await self.add()
+      self, user: UserCreateSchema,
+      ) -> UserDetailResponseSchema:
+    new_user = await self.add(obj_data=user.model_dump())
+    return new_user.to_dto()
