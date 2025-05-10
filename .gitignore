@@ -6,6 +6,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+super_db/
+.vscode/
 
 # C extensions
 *.so
