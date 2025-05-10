@@ -1,6 +1,8 @@
 from abc import ABC
+from uuid import UUID
+from fastapi import HTTPException
 
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -10,18 +12,36 @@ class BaseRepository(ABC):
     def __init__(self, session: AsyncSession):
         self._session = session
 
-    async def get(self):
-        pass
+    async def get(self, obj_id: UUID):
+        obj_query = await self._session.execute(
+            select(self.model).where(self.model.id==obj_id)
+        )
+        obj = obj_query.scalar()
+        return obj
 
     async def list(self):
         obj_list_query = await self._session.execute(
-          select(self.model)
+            select(self.model)
         )
         obj_list = obj_list_query.scalars().all()
         return obj_list
 
-    async def update(self):
-        pass
+    async def update(self, obj_id: UUID, obj_new_data: dict):
+        obj_query = await self._session.execute(
+            select(self.model).where(self.model.id==obj_id)
+        )
+        obj = obj_query.scalar()
+        if obj:
+            update_data = {}
+            for key, value in obj_new_data.items():
+              if value is not None:
+                update_data[key] = value
+            await self._session.execute(
+              update(self.model).where(self.model.id==obj_id).values(**update_data)
+            )
+            await self._session.commit()
+            return obj
+        raise HTTPException(status_code=404, detail="Object not found")
 
     async def add(self, obj_data: dict):
         new_obj = await self._session.scalar(
@@ -29,5 +49,15 @@ class BaseRepository(ABC):
         )
         return new_obj
 
-    async def delete(self):
-        pass
+    async def delete(self, obj_id: UUID):
+        obj_query = await self._session.execute(
+            select(self.model).where(self.model.id==obj_id)
+        )
+        obj = obj_query.scalar()
+        if obj:
+            await self._session.execute(
+                delete(self.model).where(self.model.id==obj_id)
+            )
+            await self._session.commit()
+            return obj
+        raise HTTPException(status_code=404, detail="Object not found")

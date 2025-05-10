@@ -24,6 +24,8 @@ class UserDetailResponseSchema(BaseModel):
   fullname: str
   username: str
 
+  model_config = {"from_attributes": True}
+
 
 class UserListResponseSchema(BaseModel):
   users: list[UserDetailResponseSchema]
