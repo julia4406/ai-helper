@@ -8,3 +8,23 @@ services:
       - "5432:5432"
     volumes:
       - ../super_db:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis_ai
+    ports:
+      - "6379:6379"
+
+  celery_worker:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    container_name: worker_ai
+    command: celery -A src.celery.celery_app worker --loglevel=info
+    volumes:
+      - ..:/app
+    depends_on:
+      - redis
+      - db
+    env_file:
+      - ../.env

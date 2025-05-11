@@ -7,8 +7,13 @@ router = APIRouter(tags=["User_profiles"], prefix="/user_profiles")
 
 @router.post("")
 async def generate_user_profile(
-    id: UUID = UserProfileCreateSchema,
+    id: UUID,
     cv_file_path: UploadFile = File(...)
 ):
-    pass
+    pdf_content_bytes = await cv_file_path.read()
+    pdf_content_task = extract_text_from_pdf.delay(pdf_content_bytes)
+    return {
+        "task_id": pdf_content_task.id,
+        "content": pdf_content_task.text
+      }
   
