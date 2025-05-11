@@ -2,7 +2,8 @@ import fitz
 from celery import shared_task
 
 
-@shared_task
+# TODO remade into task (all services inside compose)
+# @shared_task
 def extract_text_from_pdf(upload_file: bytes) -> str:
     try:
         with fitz.open(stream=upload_file, filetype="pdf") as doc:
