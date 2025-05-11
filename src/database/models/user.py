@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Mapped
 
 from src.api.schemas.user import UserDetailResponseSchema
-from src.database.models.base import Base, IdModelMixin
+from src.database.models.base import Base, IdCreatedAtModelMixin
 
 
-class User(Base, IdModelMixin):
+class User(Base, IdCreatedAtModelMixin):
     __tablename__ = "users"
 
     fullname: Mapped[str]
