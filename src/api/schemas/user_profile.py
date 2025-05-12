@@ -12,9 +12,13 @@ class UserProfileCreateSchema(BaseModel):
     cv_file: UploadFile
 
 
-class UserProfileCreateResponseSchema(BaseModel):
-    ...
+class UserProfileSchema(BaseModel):
+    job_position: Annotated[str | None, Field()] = None
+    experience: Annotated[str | None, Field()] = None
+    tech_stack: Annotated[str | None, Field()] = None
 
+
+# TODO: Separate models for creating and reading profiles
 
 class UserProfileDetailResponseSchema(BaseModel):
     id: UUID

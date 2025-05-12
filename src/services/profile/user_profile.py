@@ -17,7 +17,7 @@ class ProfileService:
     async def create_new_profile(self, profile_data:UserProfileCreateSchema):
         pdf_content = await extract_text_from_pdf(profile_data.cv_file)
 
-        # Треба передавати тепер контент нашого резюме ЛЛМці
+        # Передаємо контент CV LLMці для обробки
         llm_response = await self._llm_client.send_message(
             system_prompt="You are a helpful AI assistant that generates a user profile"
                           "based in the provided CV text. Your response should"

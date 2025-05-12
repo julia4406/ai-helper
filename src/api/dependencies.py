@@ -8,7 +8,7 @@ from src.repositories.user_profile import ProfileRepository
 from src.services.user import UserService
 from src.repositories.user import UserRepository
 from src.database.core.engine import get_async_session
-from src.services.user_profile import ProfileService
+from src.services.profile.user_profile import ProfileService
 
 AsyncSessionDep = Annotated[AsyncSession, Depends(get_async_session)]
 
