@@ -14,10 +14,7 @@ class UserProfile(Base, IdCreatedAtModelMixin):
     experience: Mapped[float] = mapped_column(default=0.5)
     tech_stack: Mapped[str] = mapped_column(nullable=True)
 
-    user_id: Mapped[UUID] = mapped_column(
-        ForeignKey("users.id"),
-        back_populates="profiles"
-    )
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
 
     def to_dto(self) -> UserProfileDetailResponseSchema:
         return UserProfileDetailResponseSchema(
