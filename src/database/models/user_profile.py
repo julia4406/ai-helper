@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.api.schemas.user_profile import UserProfileDetailResponseSchema
@@ -13,7 +14,10 @@ class UserProfile(Base, IdCreatedAtModelMixin):
     experience: Mapped[float] = mapped_column(default=0.5)
     tech_stack: Mapped[str] = mapped_column(nullable=True)
 
-    user_id: Mapped[UUID] = relationship("User", back_populates="profiles")
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("users.id"),
+        back_populates="profiles"
+    )
 
     def to_dto(self) -> UserProfileDetailResponseSchema:
         return UserProfileDetailResponseSchema(
@@ -21,6 +25,5 @@ class UserProfile(Base, IdCreatedAtModelMixin):
             user_id=self.user_id,
             job_position=self.job_position,
             experience=self.experience,
-            tech_stack=self.tech_stack,
-            created_at=self.created_at
+            tech_stack=self.tech_stack
         )

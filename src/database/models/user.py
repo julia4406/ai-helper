@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import Mapped, relationship
 
 from src.api.schemas.user import UserDetailResponseSchema
 from src.database.models.base import Base, IdCreatedAtModelMixin
@@ -10,6 +10,8 @@ class User(Base, IdCreatedAtModelMixin):
     fullname: Mapped[str]
     username: Mapped[str]
     password: Mapped[str]
+
+    user_profiles: Mapped[list["UserProfile"]] = relationship()
 
     def to_dto(self) -> UserDetailResponseSchema:
         return UserDetailResponseSchema(
