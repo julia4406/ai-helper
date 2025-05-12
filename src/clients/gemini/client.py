@@ -20,7 +20,7 @@ class GeminiClient(BaseLLMClient):
             system_prompt: str,
             message: str,
             tools: list = None
-    ):
+    ) -> tuple[str, any]:
         config = types.GenerateContentConfig(system_instruction=system_prompt)
 
         if tools:
@@ -38,7 +38,7 @@ class GeminiClient(BaseLLMClient):
         if func_call := self.get_func_call(response):
             tool = tools_mapper.get(func_call.name)
             logger.critical(f"Executing tool: {tool} with args: {func_call.args}")
-            # result = await tools_mapper.get(func_call.name)(**func_call.args).execute()
+            result = await tools_mapper.get(func_call.name)(**func_call.args).execute()
         return response.text, result
 
     @staticmethod

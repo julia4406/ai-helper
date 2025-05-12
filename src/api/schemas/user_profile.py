@@ -15,5 +15,5 @@ class UserProfileSchema(BaseModel):
     id: Annotated[UUID | None, Field()] = None
     user_id: UUID
     job_position: Annotated[str | None, Field()] = None
-    experience: Annotated[str | None, Field()] = None
+    experience: Annotated[float | None, Field()] = None
     tech_stack: Annotated[str | None, Field()] = None

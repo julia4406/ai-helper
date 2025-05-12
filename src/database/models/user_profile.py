@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.api.schemas.user_profile import UserProfileDetailResponseSchema
+from src.api.schemas.user_profile import UserProfileSchema
 from src.database.models.base import Base, IdCreatedAtModelMixin
 
 
@@ -16,8 +16,8 @@ class UserProfile(Base, IdCreatedAtModelMixin):
 
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
 
-    def to_dto(self) -> UserProfileDetailResponseSchema:
-        return UserProfileDetailResponseSchema(
+    def to_dto(self) -> UserProfileSchema:
+        return UserProfileSchema(
             id=self.id,
             user_id=self.user_id,
             job_position=self.job_position,
