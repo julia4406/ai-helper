@@ -1,8 +1,8 @@
 from uuid import UUID
 
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.api.schemas.user import UserDetailResponseSchema
+from src.api.schemas.user_profile import UserProfileDetailResponseSchema
 from src.database.models.base import Base, IdCreatedAtModelMixin
 
 
@@ -21,5 +21,6 @@ class UserProfile(Base, IdCreatedAtModelMixin):
             user_id=self.user_id,
             job_position=self.job_position,
             experience=self.experience,
-            tech_stack=self.tech_stack
+            tech_stack=self.tech_stack,
+            created_at=self.created_at
         )
