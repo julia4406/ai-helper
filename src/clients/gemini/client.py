@@ -3,10 +3,12 @@ from typing import Annotated
 from fastapi import Depends
 from google import genai
 from google.genai import types
+from google.genai.types import GenerateContentResponse, FunctionCall
 from loguru import logger
 
 from src.clients.base import BaseLLMClient
 from src.clients.gemini.config import get_gemini_settings
+from src.services.profile.mapper import tools_mapper
 
 
 class GeminiClient(BaseLLMClient):
@@ -16,19 +18,37 @@ class GeminiClient(BaseLLMClient):
     async def send_message(
             self,
             system_prompt: str,
-            message: str
+            message: str,
+            tools: list = None
     ):
-        client = genai.Client(api_key=self._settings.API_KEY)
-        logger.debug(f"Sending message to Gemini: {message}")
+        config = types.GenerateContentConfig(system_instruction=system_prompt)
 
+        if tools:
+            client_tools = types.Tool(function_declarations=tools)
+            config.tools = [client_tools]
+
+        client = genai.Client(api_key=self._settings.API_KEY)
         response = client.models.generate_content(
             model=self._settings.MODEL,
-            config=types.GenerateContentConfig(
-                system_instruction=system_prompt),
+            config=config,
             contents=message
         )
+        logger.critical(f"Gemini response: {response}")
+        result = None
+        if func_call := self.get_func_call(response):
+            tool = tools_mapper.get(func_call.name)
+            logger.critical(f"Executing tool: {tool} with args: {func_call.args}")
+            # result = await tools_mapper.get(func_call.name)(**func_call.args).execute()
+        return response.text, result
 
-        return response.text
+    @staticmethod
+    def get_func_call(response: GenerateContentResponse) -> FunctionCall | None:
+        logger.warning(f"Gemini response: {response}")
+        if response.candidates[0].content.parts[0].function_call:
+            function_call = response.candidates[0].content.parts[0].function_call
+            logger.debug(f"Gemini function call found!\n{function_call}")
+            return function_call
+        return None
 
 
 def get_gemini_client() -> BaseLLMClient:

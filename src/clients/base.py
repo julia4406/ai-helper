@@ -7,7 +7,7 @@ class BaseLLMClient(ABC):
     """
 
     @abstractmethod
-    async def send_message(self, system_prompt: str, message: str):
+    async def send_message(self, system_prompt: str, message: str, tools: list):
         """
         can send message to LLM
         """
