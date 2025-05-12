@@ -22,4 +22,3 @@ class UserProfileDetailResponseSchema(BaseModel):
     job_position: str
     experience: float
     tech_stack: str
-    created_at: datetime

@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 from google import genai
 from google.genai import types
+from loguru import logger
 
 from src.clients.base import BaseLLMClient
 from src.clients.gemini.config import get_gemini_settings
@@ -18,6 +19,7 @@ class GeminiClient(BaseLLMClient):
             message: str
     ):
         client = genai.Client(api_key=self._settings.API_KEY)
+        logger.debug(f"Sending message to Gemini: {message}")
 
         response = client.models.generate_content(
             model=self._settings.MODEL,
@@ -30,7 +32,7 @@ class GeminiClient(BaseLLMClient):
 
 
 def get_gemini_client() -> BaseLLMClient:
-    return GeminiClient
+    return GeminiClient()
 
 
 GeminiClientDep = Annotated[GeminiClient, Depends(get_gemini_client)]
