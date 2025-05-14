@@ -1,6 +1,8 @@
 from ctypes import c_voidp
+from uuid import UUID
 
-from src.api.schemas.user_profile import UserProfileCreateSchema
+from src.api.schemas.user_profile import UserProfileCreateSchema, \
+    UserProfileSchema
 from src.clients.base import BaseLLMClient
 from src.repositories.user_profile import ProfileRepository
 from src.services.profile.prompts import PROFILE_CREATE_SYSTEM_PROMPT
@@ -39,3 +41,6 @@ class ProfileService:
             return user_profile
 
         return RuntimeError("Failed to generate user profile")
+
+    async def get_profiles(self, user_id: UUID) -> list[UserProfileSchema]:
+        return await self._profile_repo.get_user_profiles(user_id)

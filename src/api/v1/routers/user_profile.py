@@ -1,7 +1,7 @@
 from uuid import UUID
 from fastapi import APIRouter, UploadFile, File
 
-from src.api.dependencies import ProfileServiceDep
+from src.api.dependencies import ProfileServiceDep, UserServiceDep
 from src.api.schemas.user_profile import UserProfileCreateSchema
 
 
@@ -24,4 +24,15 @@ async def generate_user_profile(
     return {
         "content": profile_content
       }
-  
+
+
+@router.get("")
+async def get_user_profiles(
+        user_id: UUID,
+        profile_service: ProfileServiceDep,
+        user_service: UserServiceDep
+):
+    await user_service.get_user_by_id(user_id)
+
+    user_profiles = await profile_service.get_profiles(user_id)
+    return user_profiles
