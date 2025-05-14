@@ -11,3 +11,6 @@ class IdCreatedAtModelMixin:
     created_at: Mapped[datetime] = mapped_column(
       DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(id={self.id})"
