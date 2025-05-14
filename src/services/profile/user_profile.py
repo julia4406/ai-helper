@@ -4,6 +4,7 @@ from uuid import UUID
 from src.api.schemas.user_profile import UserProfileCreateSchema, \
     UserProfileSchema
 from src.clients.base import BaseLLMClient
+from src.exceptions import ObjectNotFoundException
 from src.repositories.user_profile import ProfileRepository
 from src.services.profile.prompts import PROFILE_CREATE_SYSTEM_PROMPT
 from src.services.profile.tools import SaveUserProfile
@@ -44,3 +45,9 @@ class ProfileService:
 
     async def get_profiles(self, user_id: UUID) -> list[UserProfileSchema]:
         return await self._profile_repo.get_user_profiles(user_id)
+
+    async def get_user_profile_by_id(self, profile_id: UUID):
+        profile = await self._profile_repo.get_user_profile_by_id(profile_id)
+        if not profile:
+            raise ObjectNotFoundException(profile_id)
+        return profile

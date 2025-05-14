@@ -1,7 +1,9 @@
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
+
+from src.api.schemas.user_profile import UserProfileSchema
 
 
 class InterviewDetailSchema(BaseModel):
@@ -19,3 +21,27 @@ class InterviewCreateSchema(BaseModel):
     experience: Annotated[float | None, Field()] = None
     tech_stack: Annotated[str | None, Field()] = None
     user_id: Annotated[UUID, Field()]
+    profile_id: Annotated[UUID | None, Field()] = None
+
+    @model_validator(mode="after")
+    def set_title_if_none(self) -> "InterviewCreateSchema":
+        if not self.title:
+            self.set_title()
+        return self
+
+    @model_validator(mode="after")
+    def check_profile_or_args(self) -> "InterviewCreateSchema":
+        if not self.profile_id:
+            if not self.job_position or not self.experience or not self.tech_stack:
+                raise ValueError("You must provide either profile_id or "
+                                 "job_position, experience and tech_stack")
+        return self
+
+    def set_title(self):
+        self.title = f"Interview {self.job_position} - {self.experience} y."
+
+    def load_from_user_profile(self, user_profile: UserProfileSchema):
+        self.job_position = user_profile.job_position
+        self.experience = user_profile.experience
+        self.tech_stack = user_profile.tech_stack
+        self.set_title()

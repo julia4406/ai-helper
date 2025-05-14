@@ -75,7 +75,7 @@
 │ username   │        │ id                         │        │ id                 │ ◄─│ question_id          │
 │ password   │        │ title                      │        │ content            │   │ content              │
 │ fullname   │        │ job_position               │        │ difficulty         │   │ score                │
-│ created_at │        │ experience           │        │ category           │   │ feedback             │
+│ created_at │        │ experience                 │        │ category           │   │ feedback             │
 │            │        │ tech_stack                 │        │ created_at         │   │ created_at           │
 │            │        │ created_at                 │        └────────────────────┘   └──────────────────────┘
 └────────────┘        └────────────────────────────┘                 

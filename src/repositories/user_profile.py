@@ -20,3 +20,7 @@ class ProfileRepository(BaseRepository):
         query = select(self.model).where(self.model.user_id == user_id)
         user_profiles = await self._session.scalars(query)
         return [profile.to_dto() for profile in user_profiles]
+
+    async def get_user_profile_by_id(self, profile_id: UUID):
+        return await self.get(profile_id)
+
