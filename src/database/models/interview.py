@@ -16,7 +16,9 @@ class Interview(Base, IdCreatedAtModelMixin):
     user_profile_id: Mapped[int] = mapped_column(ForeignKey("user_profiles.id"))
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
 
-    user_profile = relationship("UserProfile", back_populates="interviews")
+    user_profile: Mapped["UserProfile"] = relationship(
+        "UserProfile", back_populates="interviews"
+    )
 
     def to_dto(self) -> InterviewDetailSchema:
         return InterviewDetailSchema(

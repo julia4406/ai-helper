@@ -16,6 +16,7 @@ class UserProfile(Base, IdCreatedAtModelMixin):
     tech_stack: Mapped[str] = mapped_column(nullable=True)
 
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
+    interviews: Mapped[list["Interview"]] = relationship("Interview", back_populates="user_profile")
 
     def to_dto(self) -> UserProfileSchema:
         return UserProfileSchema(
