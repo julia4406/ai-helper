@@ -23,21 +23,28 @@ class GeminiClient(BaseLLMClient):
     ) -> tuple[str, any]:
         config = types.GenerateContentConfig(system_instruction=system_prompt)
 
-        if tools:
+        if tools:    # this is our function call parameters
             client_tools = types.Tool(function_declarations=tools)
             config.tools = [client_tools]
 
         client = genai.Client(api_key=self._settings.API_KEY)
-        response = client.models.generate_content(
+
+        # awaitable-object made with of aio-module
+        # this object came from API Gemini
+        # contains:
+        # - candidates - list of possible responses from model
+        # - candidates[0].content.parts[0].text
+        # - candidates[0].content.parts[0].function_call
+        response = await client.aio.models.generate_content(
             model=self._settings.MODEL,
             config=config,
             contents=message
         )
-        logger.critical(f"Gemini response: {response}")
-        result = None
+
+        result = None    # execution function call result (if tools given)
         if func_call := self.get_func_call(response):
             tool = tools_mapper.get(func_call.name)
-            logger.critical(f"Executing tool: {tool} with args: {func_call.args}")
+            logger.warning(f"Executing tool: {tool} with args: {func_call.args}")
             result = await tools_mapper.get(func_call.name)(**func_call.args).execute()
         return response.text, result
 
@@ -51,8 +58,7 @@ class GeminiClient(BaseLLMClient):
         return None
 
 
-def get_gemini_client() -> BaseLLMClient:
+def get_gemini_client() -> GeminiClient:
     return GeminiClient()
-
 
 GeminiClientDep = Annotated[GeminiClient, Depends(get_gemini_client)]
