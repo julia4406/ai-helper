@@ -5,7 +5,7 @@ from src.api.dependencies import ProfileServiceDep, UserServiceDep
 from src.api.schemas.user_profile import UserProfileCreateSchema
 
 
-router = APIRouter(tags=["User_profiles"], prefix="/user_profiles")
+router = APIRouter(tags=["User profiles"], prefix="/user_profiles")
 
 @router.post("")
 async def generate_user_profile(
