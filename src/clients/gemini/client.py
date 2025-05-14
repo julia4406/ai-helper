@@ -41,6 +41,7 @@ class GeminiClient(BaseLLMClient):
             contents=message
         )
 
+        # TODO: Improve it (create Model for LLM Response)
         result = None    # execution function call result (if tools given)
         if func_call := self.get_func_call(response):
             tool = tools_mapper.get(func_call.name)

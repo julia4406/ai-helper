@@ -15,3 +15,7 @@ alembic upgrade head
 
 run celery (locally, not in container)
 celery -A src.celery.celery_app worker --loglevel=info --pool=solo
+
+
+Profiles -
+на етапі створення - визначати чи завантажити пдф, чи створити введенням

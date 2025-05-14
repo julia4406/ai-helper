@@ -87,7 +87,7 @@
                       │ id                   │                       
                       │ user_id              │                       
                       │ job_position         │                       
-                      │ experience     │                       
+                      │ experience           │         
                       │ tech_stack           │                      
                       │ created_at           │                       
                       └──────────────────────┘                       

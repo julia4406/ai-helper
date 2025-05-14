@@ -14,7 +14,7 @@ class BaseRepository(ABC):
 
     async def get(self, obj_id: UUID):
         obj_query = await self._session.execute(
-            select(self.model).where(self.model.id==obj_id)
+            select(self.model).where(self.model.id == obj_id)
         )
         obj = obj_query.scalar()
         return obj
@@ -28,7 +28,7 @@ class BaseRepository(ABC):
 
     async def update(self, obj_id: UUID, obj_new_data: dict):
         obj_query = await self._session.execute(
-            select(self.model).where(self.model.id==obj_id)
+            select(self.model).where(self.model.id == obj_id)
         )
         obj = obj_query.scalar()
         if obj:
@@ -37,7 +37,8 @@ class BaseRepository(ABC):
               if value is not None:
                 update_data[key] = value
             await self._session.execute(
-              update(self.model).where(self.model.id==obj_id).values(**update_data)
+              update(self.model).where(self.model.id == obj_id).values(
+                  **update_data)
             )
             await self._session.commit()
             return obj
@@ -51,12 +52,12 @@ class BaseRepository(ABC):
 
     async def delete(self, obj_id: UUID):
         obj_query = await self._session.execute(
-            select(self.model).where(self.model.id==obj_id)
+            select(self.model).where(self.model.id == obj_id)
         )
         obj = obj_query.scalar()
         if obj:
             await self._session.execute(
-                delete(self.model).where(self.model.id==obj_id)
+                delete(self.model).where(self.model.id == obj_id)
             )
             await self._session.commit()
             return obj
