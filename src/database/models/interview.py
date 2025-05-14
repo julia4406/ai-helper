@@ -29,7 +29,7 @@ class Interview(Base, IdCreatedAtModelMixin):
             id=self.id,
             title=self.title,
             user_id=self.user_id,
-            job_position=self.user_profile.job_position,
-            experience=self.user_profile.experience,
-            tech_stack=self.user_profile.tech_stack
+            job_position=self.job_position,
+            experience=self.experience,
+            tech_stack=self.tech_stack
         )

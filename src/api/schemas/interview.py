@@ -19,4 +19,3 @@ class InterviewCreateSchema(BaseModel):
     experience: Annotated[float | None, Field()] = None
     tech_stack: Annotated[str | None, Field()] = None
     user_id: Annotated[UUID, Field()]
-    user_profile_id: Annotated[UUID | None, Field()] = None
