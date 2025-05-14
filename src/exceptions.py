@@ -8,3 +8,11 @@ class UserNotFoundException(HTTPException):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"User with id {user_id} not found"
         )
+
+
+class UserAlreadyExistException(HTTPException):
+    def __init__(self, user_id: UUID) -> None:
+        super().__init__(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"User with id {user_id} already exist"
+        )

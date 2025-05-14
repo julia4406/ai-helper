@@ -16,4 +16,5 @@ class UserProfileSchema(BaseModel):
     user_id: UUID
     job_position: Annotated[str | None, Field()] = None
     experience: Annotated[float | None, Field()] = None
+    # TODO: Can be improved by using JSON field
     tech_stack: Annotated[str | None, Field()] = None

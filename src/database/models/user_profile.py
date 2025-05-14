@@ -12,6 +12,7 @@ class UserProfile(Base, IdCreatedAtModelMixin):
 
     job_position: Mapped[str] = mapped_column(nullable=True)
     experience: Mapped[float] = mapped_column(default=0.5)
+    # TODO: Can be improved by using JSON field
     tech_stack: Mapped[str] = mapped_column(nullable=True)
 
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
