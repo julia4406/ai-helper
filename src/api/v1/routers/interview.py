@@ -9,6 +9,7 @@ router = APIRouter(tags=["Interviews"], prefix="/interviews")
 @router.post("")
 async def create_interview(
     interview_data: InterviewCreateSchema,
+
 ):
 
     return {
