@@ -2,17 +2,17 @@ from uuid import UUID
 
 from fastapi import HTTPException, status
 
-class UserNotFoundException(HTTPException):
-    def __init__(self, user_id: UUID) -> None:
+class ObjectNotFoundException(HTTPException):
+    def __init__(self, obj_id: UUID) -> None:
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with id {user_id} not found"
+            detail=f"Object with id {obj_id} not found"
         )
 
 
-class UserAlreadyExistException(HTTPException):
-    def __init__(self, user_id: UUID) -> None:
+class ObjectAlreadyExistException(HTTPException):
+    def __init__(self, obj_id: UUID) -> None:
         super().__init__(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"User with id {user_id} already exist"
+            detail=f"Object with id {obj_id} already exist"
         )
