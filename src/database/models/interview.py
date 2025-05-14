@@ -1,10 +1,9 @@
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, String, Float, Integer
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.api.schemas.interview import InterviewDetailSchema
-from src.api.schemas.user_profile import UserProfileSchema
 from src.database.models.base import Base, IdCreatedAtModelMixin
 
 
@@ -12,13 +11,18 @@ class Interview(Base, IdCreatedAtModelMixin):
     __tablename__ = "interviews"
 
     title: Mapped[str] = mapped_column(String)
+    job_position: Mapped[str] = mapped_column()
+    experience: Mapped[float] = mapped_column()
+    tech_stack: Mapped[str] = mapped_column()
 
-    user_profile_id: Mapped[int] = mapped_column(ForeignKey("user_profiles.id"))
+
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
 
-    user_profile: Mapped["UserProfile"] = relationship(
-        "UserProfile", back_populates="interviews"
-    )
+    # TODO can be remade
+    # user_profile_id: Mapped[int] = mapped_column(ForeignKey("user_profiles.id"))
+    # user_profile: Mapped["UserProfile"] = relationship(
+    #     "UserProfile", back_populates="interviews"
+    # )
 
     def to_dto(self) -> InterviewDetailSchema:
         return InterviewDetailSchema(
