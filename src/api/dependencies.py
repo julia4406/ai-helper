@@ -48,12 +48,14 @@ InterviewRepoDep = Annotated[InterviewRepository, Depends(get_interview_reposito
 def get_interview_service(
         interview_repo: InterviewRepoDep,
         user_repo: UserRepoDep,
-        profile_repo: ProfileRepoDep
+        profile_repo: ProfileRepoDep,
+        llm_client: GeminiClientDep
 ) -> InterviewService:
   return InterviewService(
     interview_repo=interview_repo,
     user_repo=user_repo,
-    profile_repo=profile_repo
+    profile_repo=profile_repo,
+    llm_client=llm_client
   )
 
 InterviewServiceDep = Annotated[InterviewService, Depends(get_interview_service)]
