@@ -16,9 +16,12 @@ class Interview(Base, IdCreatedAtModelMixin):
     experience: Mapped[float] = mapped_column()
     tech_stack: Mapped[str] = mapped_column()
 
-
+    profile_id: Mapped[UUID] = mapped_column(
+        ForeignKey("user_profiles.id"),
+        nullable=True
+    )
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
-    questions: Mapped[list["Question"]] = relationship()
+    questions: Mapped[list["Question"]] = relationship(back_populates="interview")
 
     # TODO can be remade
     # user_profile_id: Mapped[int] = mapped_column(ForeignKey("user_profiles.id"))
