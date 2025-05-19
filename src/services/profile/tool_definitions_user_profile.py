@@ -2,7 +2,6 @@
 from typing import Optional
 from uuid import UUID
 
-from loguru import logger
 from pydantic import BaseModel, Field
 
 from src.api.schemas.user_profile import UserProfileSchema

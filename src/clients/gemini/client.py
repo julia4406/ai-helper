@@ -8,7 +8,7 @@ from loguru import logger
 
 from src.clients.base import BaseLLMClient
 from src.clients.gemini.config import get_gemini_settings
-from src.services.profile.mapper import tools_mapper
+from src.clients.mapper import tools_mapper
 
 
 class GeminiClient(BaseLLMClient):

@@ -6,7 +6,7 @@ from src.clients.gemini.client import GeminiClient
 from src.exceptions import ObjectNotFoundException
 from src.repositories.user_profile import ProfileRepository
 from src.clients.prompts import PROFILE_CREATE_SYSTEM_PROMPT
-from src.services.profile.tools import SaveUserProfile
+from src.services.profile.tool_definitions_user_profile import SaveUserProfile
 from src.utils.pdf_reader import extract_text_from_pdf
 
 
