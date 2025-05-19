@@ -4,10 +4,12 @@ from fastapi import HTTPException
 from loguru import logger
 
 from src.api.schemas.interview import InterviewCreateSchema
+from src.api.schemas.question import QuestionCreateSchema
 from src.clients.gemini.client import GeminiClient
 from src.clients.prompts import QUESTION_GENERATION_SYSTEM_PROMPT
 from src.exceptions import ObjectNotFoundException
 from src.repositories.interview import InterviewRepository
+from src.repositories.question import QuestionRepository
 from src.repositories.user import UserRepository
 from src.repositories.user_profile import ProfileRepository
 
@@ -18,11 +20,13 @@ class InterviewService:
             interview_repo: InterviewRepository,
             user_repo: UserRepository,
             profile_repo: ProfileRepository,
+            question_repo: QuestionRepository,
             llm_client: GeminiClient
     ):
         self._interview_repo = interview_repo
         self._user_repo = user_repo
         self._profile_repo = profile_repo
+        self._question_repo = question_repo
         self._llm_client = llm_client
 
     async def create_interview(self, data: InterviewCreateSchema):
@@ -48,15 +52,26 @@ class InterviewService:
             new_interview = await self._interview_repo.create_interview(data=data)
             logger.info(f"Created new interview {new_interview}")
 
-            question_tasks = []
-            for i in range(10):
-                task = asyncio.create_task(
-                    self.generate_question(data)
-                )
-                question_tasks.append(task)
+            question_text = await self.generate_question(data)
 
-            questions = await asyncio.gather(*question_tasks)
-            logger.warning(f"{questions}")
+            await self._question_repo.create_question(
+                question_data=QuestionCreateSchema(
+                    text=question_text,
+                    interview_id=new_interview.id
+                )
+            )
+
+            # TODO gather couple of questions
+            # question_tasks = []
+            # for i in range(10):
+            #     task = asyncio.create_task(
+            #         self.generate_question(data)
+            #     )
+            #     question_tasks.append(task)
+            #
+            # questions = await asyncio.gather(*question_tasks)
+            # logger.warning(f"{questions}")
+
             return new_interview
 
         except Exception as e:
