@@ -1,12 +1,11 @@
-from ctypes import c_voidp
 from uuid import UUID
 
 from src.api.schemas.user_profile import UserProfileCreateSchema, \
     UserProfileSchema
-from src.clients.base import BaseLLMClient
+from src.clients.gemini.client import GeminiClient
 from src.exceptions import ObjectNotFoundException
 from src.repositories.user_profile import ProfileRepository
-from src.services.profile.prompts import PROFILE_CREATE_SYSTEM_PROMPT
+from src.clients.prompts import PROFILE_CREATE_SYSTEM_PROMPT
 from src.services.profile.tools import SaveUserProfile
 from src.utils.pdf_reader import extract_text_from_pdf
 
@@ -15,7 +14,7 @@ class ProfileService:
 
     def __init__(
             self,
-            llm_client: BaseLLMClient,
+            llm_client: GeminiClient,
             profile_repo: ProfileRepository
     ):
         self._profile_repo = profile_repo
@@ -49,5 +48,5 @@ class ProfileService:
     async def get_user_profile_by_id(self, profile_id: UUID):
         profile = await self._profile_repo.get_user_profile_by_id(profile_id)
         if not profile:
-            raise ObjectNotFoundException(profile_id)
+            raise ObjectNotFoundException("Profile", profile_id)
         return profile

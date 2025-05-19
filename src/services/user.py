@@ -19,7 +19,7 @@ class UserService:
     async def get_user_by_id(self, user_id: UUID):
         user = await self._user_repo.get_user_by_id(user_id)
         if not user:
-            raise ObjectNotFoundException(user_id)
+            raise ObjectNotFoundException("User", user_id)
         return user
 
     async def update_user(self, user_id: UUID, user_upd: UserUpdateSchema):

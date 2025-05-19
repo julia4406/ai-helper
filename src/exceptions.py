@@ -3,10 +3,10 @@ from uuid import UUID
 from fastapi import HTTPException, status
 
 class ObjectNotFoundException(HTTPException):
-    def __init__(self, obj_id: UUID) -> None:
+    def __init__(self, obj_type: str, obj_id: UUID) -> None:
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Object with id {obj_id} not found"
+            detail=f"{obj_type} with id {obj_id} not found"
         )
 
 
