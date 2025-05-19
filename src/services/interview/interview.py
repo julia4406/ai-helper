@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import HTTPException
 from loguru import logger
 
@@ -45,6 +47,16 @@ class InterviewService:
         try:
             new_interview = await self._interview_repo.create_interview(data=data)
             logger.info(f"Created new interview {new_interview}")
+
+            question_tasks = []
+            for i in range(10):
+                task = asyncio.create_task(
+                    self.generate_question(data)
+                )
+                question_tasks.append(task)
+
+            questions = await asyncio.gather(*question_tasks)
+            logger.warning(f"{questions}")
             return new_interview
 
         except Exception as e:
@@ -53,7 +65,7 @@ class InterviewService:
             raise HTTPException(status_code=400, detail=f"Error {e}")
 
 
-    async def generate_questions(self, data: InterviewCreateSchema):
+    async def generate_question(self, data: InterviewCreateSchema):
         text, _ = await self._llm_client.send_message(
             system_prompt=self.question_prompt(data),
             message="Generate 1 question"
