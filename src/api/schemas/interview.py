@@ -1,8 +1,9 @@
-from typing import Annotated, Any
+from typing import Annotated
 from uuid import UUID
 
 from pydantic import BaseModel, Field, model_validator
 
+from src.api.schemas.question import QuestionDetailSchema
 from src.api.schemas.user_profile import UserProfileSchema
 
 
@@ -13,6 +14,7 @@ class InterviewDetailSchema(BaseModel):
     job_position: str
     experience: float
     tech_stack: str
+    questions: list["QuestionDetailSchema"]
 
 
 class InterviewCreateSchema(BaseModel):
@@ -45,3 +47,7 @@ class InterviewCreateSchema(BaseModel):
         self.experience = user_profile.experience
         self.tech_stack = user_profile.tech_stack
         self.set_title()
+
+class InterviewFinishResponseSchema(BaseModel):
+    id: UUID
+    feedback: str
