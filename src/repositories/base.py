@@ -1,6 +1,7 @@
 from abc import ABC
 from uuid import UUID
 from fastapi import HTTPException
+from loguru import logger
 
 from sqlalchemy import insert, select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,7 +17,7 @@ class BaseRepository(ABC):
         obj_query = await self._session.execute(
             select(self.model).where(self.model.id == obj_id)
         )
-        obj = obj_query.scalar()
+        obj = obj_query.scalars().one_or_none()
         return obj
 
     async def list(self):
@@ -48,6 +49,7 @@ class BaseRepository(ABC):
         new_obj = await self._session.scalar(
             insert(self.model).values(**obj_data).returning(self.model)
         )
+        logger.info(f"Created new obj {new_obj}")
         return new_obj
 
     async def delete(self, obj_id: UUID):
