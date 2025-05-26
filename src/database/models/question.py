@@ -13,7 +13,6 @@ class Question(Base, IdCreatedAtModelMixin):
 
     text: Mapped[str]
     interview_id: Mapped[UUID] = mapped_column(ForeignKey("interviews.id"))
-    interview: Mapped["Interview"] = relationship(back_populates="questions")
 
     def to_dto(self) -> QuestionDetailSchema:
         return QuestionDetailSchema(

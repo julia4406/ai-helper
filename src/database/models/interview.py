@@ -1,8 +1,7 @@
 from uuid import UUID
 
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, relationship
-from sqlalchemy.testing.schema import mapped_column
+from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from src.api.schemas.interview import InterviewDetailSchema
 from src.database.models.base import Base, IdCreatedAtModelMixin
@@ -16,18 +15,8 @@ class Interview(Base, IdCreatedAtModelMixin):
     experience: Mapped[float] = mapped_column()
     tech_stack: Mapped[str] = mapped_column()
 
-    profile_id: Mapped[UUID] = mapped_column(
-        ForeignKey("user_profiles.id"),
-        nullable=True
-    )
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
-    questions: Mapped[list["Question"]] = relationship(back_populates="interview")
-
-    # TODO can be remade
-    # user_profile_id: Mapped[int] = mapped_column(ForeignKey("user_profiles.id"))
-    # user_profile: Mapped["UserProfile"] = relationship(
-    #     "UserProfile", back_populates="interviews"
-    # )
+    questions: Mapped[list["Question"]] = relationship()
 
     def to_dto(self) -> InterviewDetailSchema:
         return InterviewDetailSchema(
@@ -36,5 +25,6 @@ class Interview(Base, IdCreatedAtModelMixin):
             user_id=self.user_id,
             job_position=self.job_position,
             experience=self.experience,
-            tech_stack=self.tech_stack
+            tech_stack=self.tech_stack,
+            questions=[question.to_dto() for question in self.questions]
         )
