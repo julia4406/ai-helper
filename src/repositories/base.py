@@ -45,10 +45,12 @@ class BaseRepository(ABC):
             return obj
         raise HTTPException(status_code=404, detail="Object not found")
 
-    async def add(self, obj_data: dict):
-        new_obj = await self._session.scalar(
-            insert(self.model).values(**obj_data).returning(self.model)
-        )
+    async def add(self, obj_data: dict, load_options: list = None):
+        stmt = insert(self.model).values(**obj_data).returning(self.model)
+        if load_options:
+            stmt = stmt.options(*load_options)
+
+        new_obj = await self._session.scalar(stmt)
         logger.info(f"Created new obj {new_obj}")
         return new_obj
 

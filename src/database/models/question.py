@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy.orm import Mapped
 from sqlalchemy.testing.schema import mapped_column
 
 from src.api.schemas.question import QuestionDetailSchema

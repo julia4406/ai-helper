@@ -1,9 +1,11 @@
-import asyncio
-
+from asyncpg import ForeignKeyViolationError
 from fastapi import HTTPException
 from loguru import logger
 
-from src.api.schemas.interview import InterviewCreateSchema
+from src.api.schemas.interview import (
+    InterviewCreateSchema,
+    InterviewDetailSchema
+)
 from src.api.schemas.question import QuestionCreateSchema
 from src.clients.gemini.client import GeminiClient
 from src.clients.prompts import QUESTION_GENERATION_SYSTEM_PROMPT
@@ -29,8 +31,10 @@ class InterviewService:
         self._question_repo = question_repo
         self._llm_client = llm_client
 
-    async def create_interview(self, data: InterviewCreateSchema):
-        logger.info(f"Creating new interview with such data: {data}")
+    async def create_interview(
+            self, data: InterviewCreateSchema
+    ) -> InterviewDetailSchema:
+        logger.info(f"Start creating new interview with such data: {data}")
 
         user = await self._user_repo.get_user_by_id(user_id=data.user_id)
 
@@ -38,7 +42,6 @@ class InterviewService:
             logger.error(f"User not found")
             raise ObjectNotFoundException("User", data.user_id)
 
-        # checks if profile exists then load data from existing profile
         if data.profile_id:
             user_profile = await self._profile_repo.get_user_profile_by_id(
                 data.profile_id
@@ -50,47 +53,60 @@ class InterviewService:
 
         try:
             new_interview = await self._interview_repo.create_interview(data=data)
-            logger.info(f"Created new interview {new_interview}")
+            logger.info(f"Finally: created new interview {new_interview}")
 
-            question_text = await self.generate_question(data)
-
-            await self._question_repo.create_question(
-                question_data=QuestionCreateSchema(
-                    text=question_text,
-                    interview_id=new_interview.id
-                )
-            )
-
-            # TODO gather couple of questions
-            # question_tasks = []
-            # for i in range(10):
-            #     task = asyncio.create_task(
-            #         self.generate_question(data)
-            #     )
-            #     question_tasks.append(task)
-            #
-            # questions = await asyncio.gather(*question_tasks)
-            # logger.warning(f"{questions}")
+            await self.create_question(new_interview, is_first=True)
 
             return new_interview
 
-        except Exception as e:
+        except ForeignKeyViolationError as e:
             logger.error(f"Cannot create new interview.\n"
                          f"Error message:  {e}")
             raise HTTPException(status_code=400, detail=f"Error {e}")
 
+    async def create_question(
+            self,
+            data: InterviewCreateSchema | InterviewDetailSchema,
+            is_first: bool = False
+    ):
+        question_text = await self._generate_question(data, is_first=is_first)
+        logger.info(
+            f"Generated question for interview {data.id}: {question_text}"
+        )
 
-    async def generate_question(self, data: InterviewCreateSchema):
+        await self._question_repo.create_question(
+            question_data=QuestionCreateSchema(
+                text=question_text,
+                interview_id=data.id
+            )
+        )
+
+    async def _generate_question(
+            self,
+            data: InterviewCreateSchema | InterviewDetailSchema,
+            is_first: bool = False
+    ):
+        system_prompt = self.question_prompt(data=data)
+        if is_first:
+            system_prompt = self.first_question_prompt(data=data)
+
         text, _ = await self._llm_client.send_message(
-            system_prompt=self.question_prompt(data),
+            system_prompt=system_prompt,
             message="Generate 1 question"
         )
         logger.info(f"Generated question: {text[:40]}")
         return text
 
+    @staticmethod
+    def first_question_prompt(data: InterviewCreateSchema):
+        return QUESTION_GENERATION_SYSTEM_PROMPT.format(
+            job_position=data.job_position,
+            experience=data.experience,
+            tech_stack=data.tech_stack
+        )
 
     @staticmethod
-    def question_prompt(data: InterviewCreateSchema):
+    def question_prompt(data: InterviewDetailSchema):
         return QUESTION_GENERATION_SYSTEM_PROMPT.format(
             job_position=data.job_position,
             experience=data.experience,
