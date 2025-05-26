@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from src.exceptions import ObjectNotFoundException
 from src.repositories.user import UserRepository
 from src.api.schemas.user import UserCreateSchema, UserUpdateSchema
 
@@ -16,7 +17,10 @@ class UserService:
         return await self._user_repo.get_list_of_users()
 
     async def get_user_by_id(self, user_id: UUID):
-        return await self._user_repo.get_user_by_id(user_id)
+        user = await self._user_repo.get_user_by_id(user_id)
+        if not user:
+            raise ObjectNotFoundException("User", user_id)
+        return user
 
     async def update_user(self, user_id: UUID, user_upd: UserUpdateSchema):
         return await self._user_repo.update_user(user_id=user_id, user_upd=user_upd)

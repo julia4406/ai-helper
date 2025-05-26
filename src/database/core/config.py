@@ -11,7 +11,8 @@ class DatabaseSettings(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_prefix="POSTGRES_",
-        env_file="./.env"
+        env_file="./.env",
+        extra="ignore"  # ignoring other values in .env except listed
     )
 
 
