@@ -1,19 +1,28 @@
+from uuid import UUID
+
 from asyncpg import ForeignKeyViolationError
 from fastapi import HTTPException
 from loguru import logger
 
+from src.api.schemas.answer import AnswerCreateSchema
 from src.api.schemas.interview import (
     InterviewCreateSchema,
     InterviewDetailSchema
 )
 from src.api.schemas.question import QuestionCreateSchema
 from src.clients.gemini.client import GeminiClient
-from src.clients.prompts import QUESTION_GENERATION_SYSTEM_PROMPT
+from src.clients.prompts import (
+    QUESTION_GENERATION_SYSTEM_PROMPT,
+    ANSWER_RATING_PROMPT,
+    INTERVIEW_RATING_PROMPT
+)
 from src.exceptions import ObjectNotFoundException
+from src.repositories.answer import AnswerRepository
 from src.repositories.interview import InterviewRepository
 from src.repositories.question import QuestionRepository
 from src.repositories.user import UserRepository
 from src.repositories.user_profile import ProfileRepository
+from src.services.interview.tool_definitions_interview import SaveAnswerRate
 
 
 class InterviewService:
@@ -23,12 +32,14 @@ class InterviewService:
             user_repo: UserRepository,
             profile_repo: ProfileRepository,
             question_repo: QuestionRepository,
+            answer_repo: AnswerRepository,
             llm_client: GeminiClient
     ):
         self._interview_repo = interview_repo
         self._user_repo = user_repo
         self._profile_repo = profile_repo
         self._question_repo = question_repo
+        self._answer_repo = answer_repo
         self._llm_client = llm_client
 
     async def create_interview(
@@ -64,6 +75,24 @@ class InterviewService:
                          f"Error message:  {e}")
             raise HTTPException(status_code=400, detail=f"Error {e}")
 
+    async def finish_interview(self, interview_id: UUID) -> str:
+        interview_info = await self.get_interview_by_id(interview_id)
+        if not interview_info.is_active:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Interview with id {interview_id} is already finished"
+            )
+        feedback = await self.rate_interview(interview_info)
+        await self._interview_repo.update(
+            obj_id=interview_id,
+            obj_new_data={
+                "is_active": False,
+                "feedback": feedback,
+            }
+        )
+
+        return feedback
+
     async def create_question(
             self,
             data: InterviewCreateSchema | InterviewDetailSchema,
@@ -80,6 +109,49 @@ class InterviewService:
                 interview_id=data.id
             )
         )
+
+    async def get_interview_by_id(self, interview_id: UUID):
+        interview = await self._interview_repo.get_interview_by_id(interview_id)
+
+        if not interview:
+            raise ObjectNotFoundException("Interview", interview_id)
+
+        return interview
+
+    async def create_answer_for_question(self, answer_data: AnswerCreateSchema,
+                                         interview_id: UUID):
+        await self._answer_repo.create_answer(answer_data=answer_data)
+        interview_info = await self.get_interview_by_id(interview_id)
+        rated_answer = await self.rate_answer(interview_info)
+        await self.create_question(interview_info)
+
+        return rated_answer
+
+    async def rate_answer(self, interview_info: InterviewDetailSchema):
+        _, answer_rate = await self._llm_client.send_message(
+            system_prompt=ANSWER_RATING_PROMPT,
+            message=f"{interview_info.model_dump()}"
+                    f"You should rate the last answer and save result.",
+            tools=[SaveAnswerRate.to_function_definition()]
+        )
+        logger.info(f"Rated answer: {answer_rate}")
+
+        rated_answer = await self._answer_repo.update_answer(
+            answer_id=answer_rate.pop("answer_id"),
+            new_answer_data=answer_rate,
+        )
+
+        return rated_answer
+
+    async def rate_interview(self, interview_info: InterviewDetailSchema):
+        feedback, _ = await self._llm_client.send_message(
+            system_prompt=INTERVIEW_RATING_PROMPT,
+            message=f"{interview_info.model_dump()}"
+                    f"You should rate the interview and return result",
+        )
+        logger.info(f"Rated interview: {feedback}")
+        return feedback
+
 
     async def _generate_question(
             self,

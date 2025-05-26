@@ -33,6 +33,8 @@ class InterviewRepository(BaseRepository):
             .options(
                 selectinload(
                     self.model.questions
+                ).selectinload(
+                    Question.answer
                 )
             )
         )

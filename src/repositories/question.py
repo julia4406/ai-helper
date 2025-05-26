@@ -11,6 +11,6 @@ class QuestionRepository(BaseRepository):
     async def create_question(self, question_data: QuestionCreateSchema):
         raw_question = await self.add(
             obj_data=question_data.model_dump(),
-            # load_options=[selectinload(self.model.answer)]
+            load_options=[selectinload(self.model.answer)]
         )
         return raw_question.to_dto()

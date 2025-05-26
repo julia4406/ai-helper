@@ -9,7 +9,9 @@ from src.api.schemas.user_profile import UserProfileSchema
 
 class InterviewDetailSchema(BaseModel):
     id: UUID
+    is_active: bool
     title: str
+    feedback: Annotated[str | None, Field()] = None
     user_id: UUID
     job_position: str
     experience: float

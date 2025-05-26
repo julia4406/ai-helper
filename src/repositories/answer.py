@@ -17,6 +17,9 @@ class AnswerRepository(BaseRepository):
         return new_answer.to_dto()
 
     async def update_answer(self, answer_id, new_answer_data: dict):
-        updated_answer = await self.update(obj_id=answer_id, obj_data=new_answer_data)
+        updated_answer = await self.update(
+            obj_id=answer_id,
+            obj_new_data=new_answer_data
+        )
 
         return updated_answer.to_dto()
