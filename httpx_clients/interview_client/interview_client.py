@@ -1,7 +1,10 @@
+from functools import lru_cache
+
 import httpx
 
 from app.api.schemas.user import UserCreateResponseSchema, UserCreateSchema
-from httpx_clients.interview_client.config import InterviewAPISettings
+from httpx_clients.interview_client.config import InterviewAPISettings, \
+    get_interview_settings
 
 
 class InterviewClient:
@@ -20,3 +23,10 @@ class InterviewClient:
 
     async def close(self):
         await self._client.aclose()
+
+
+@lru_cache
+def get_client() -> InterviewClient:
+    return InterviewClient(
+        settings=get_interview_settings()
+    )

@@ -7,6 +7,7 @@ class UserCreateSchema(BaseModel):
     fullname: str
     username: str
     password: str
+    telegram_id: Annotated[str | None, Field()] = None
 
 
 class UserCreateResponseSchema(BaseModel):
@@ -17,12 +18,14 @@ class UserUpdateSchema(BaseModel):
     fullname: Annotated[str | None, Field()] = None
     username: Annotated[str | None, Field()] = None
     password: Annotated[str | None, Field()] = None
+    telegram_id: Annotated[str | None, Field()] = None
 
 
 class UserDetailResponseSchema(BaseModel):
     id: UUID
     fullname: str
     username: str
+    telegram_id: Annotated[str | None, Field()] = None
 
     model_config = {"from_attributes": True}
 

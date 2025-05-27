@@ -10,10 +10,22 @@ form.addEventListener("submit", async (event) => {
     event.preventDefault(); // скасовує перезавантаження сторінки
 
     // 4. Отримуємо значення з полів форми і Формуємо дані в JSON-форматі
+    // І додаємо до даних telegram ID
+
+    // Отримуємо Telegram WebApp user
+    const telegramUser = window.Telegram.WebApp.initDataUnsafe?.user;
+    // Якщо користувач доступний — беремо його id
+    const telegramId = telegramUser?.id;
+    if (!telegramId) {
+        alert("Cannot retrieve Telegram ID. Try again via Telegram.");
+        return;
+    }
+
     const data = {
         fullname: document.getElementById("fullname").value,
         username: document.getElementById("username").value,
         password: document.getElementById("password").value,
+        telegram_id: String(telegramId),
     };
 
     try {

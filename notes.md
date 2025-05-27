@@ -13,6 +13,7 @@ python -m telegram
 run tunnel ngrok (in PowerShell)
 .\ngrok.exe http 8000
 
+
 initialize alembic
 (register all models in db/models/__init__)
 alembic init alembic
