@@ -1,8 +1,9 @@
 from uuid import UUID
 
-from app.exceptions import ObjectNotFoundException
+from app.exceptions import ObjectNotFoundException, ObjectAlreadyExistException
 from app.repositories.user import UserRepository
 from app.api.schemas.user import UserCreateSchema, UserUpdateSchema
+from app.services.validators import existing_user
 
 
 class UserService:
@@ -11,6 +12,9 @@ class UserService:
         self._user_repo = user_repo
 
     async def create_new_user(self, user: UserCreateSchema):
+        user_exists = await existing_user(user, self._user_repo)
+        if user_exists:
+            raise ObjectAlreadyExistException("User", user.telegram_id)
         return await self._user_repo.create_new_user(user=user)
 
     async def get_list_of_users(self):

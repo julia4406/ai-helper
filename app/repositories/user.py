@@ -1,4 +1,5 @@
 from uuid import UUID
+from sqlalchemy import select
 
 from app.database.models.user import User
 from app.repositories.base import BaseRepository
@@ -22,6 +23,16 @@ class UserRepository(BaseRepository):
 
     async def get_user_by_id(self, user_id: UUID) -> UserDetailResponseSchema:
         return await self.get(user_id)
+
+    async def get_user_by_field(
+            self, field_name: str, value: str
+    ) -> UserDetailResponseSchema | None:
+        field = getattr(self.model, field_name)
+        query = await self._session.execute(
+            select(self.model).where(field == value)
+        )
+        user = query.scalars().one_or_none()
+        return user
 
     async def update_user(
         self, user_id: UUID, user_upd: UserUpdateSchema
