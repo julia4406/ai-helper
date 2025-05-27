@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from starlette.staticfiles import StaticFiles
 
 from app.api.v1 import router as v1_router
 
@@ -9,3 +10,5 @@ app = FastAPI(
 )
 
 app.include_router(v1_router)
+
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
