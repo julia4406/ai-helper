@@ -38,4 +38,4 @@ script (керує поведінкою форми) and css (for later beauty)
 <https://c67b-195-12-57-124.ngrok-free.app>(forwarding link)/webapp
 - if all previous ok - setup tg-menu button in inline keyboard
 and handler for it in handlers
-- 
+- ToDO: add login (when user registered in other way want to work with telegram)
