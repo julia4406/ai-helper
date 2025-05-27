@@ -7,14 +7,14 @@ from telegram.core.loader import bot, dp
 from telegram.handlers import get_handlers_router
 # from telegram.keyboards.default_commands import remove_default_commands, set_default_commands
 
-from telegram.core.config import get_settings
+from telegram.core.config import get_tg_settings
 
 
 if sys.platform != "win32":
     import uvloop
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
-settings = get_settings()
+settings = get_tg_settings()
 
 async def on_startup() -> None:
     logger.info("bot starting...")

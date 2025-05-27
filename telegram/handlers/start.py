@@ -10,6 +10,6 @@ router = Router(name="start")
 async def start_handler(message: types.Message) -> None:
 
     await message.answer(
-        "HELLO!",
+        "HELLO! Register or Login to continue 😊",
         reply_markup=main_keyboard()
     )

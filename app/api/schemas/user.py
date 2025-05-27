@@ -4,28 +4,28 @@ from pydantic import BaseModel, Field
 
 
 class UserCreateSchema(BaseModel):
-  fullname: str
-  username: str
-  password: str
+    fullname: str
+    username: str
+    password: str
 
 
 class UserCreateResponseSchema(BaseModel):
-  id: UUID
-  
+    id: UUID
+
 
 class UserUpdateSchema(BaseModel):
-  fullname: Annotated[str | None, Field()] = None
-  username: Annotated[str | None, Field()] = None
-  password: Annotated[str | None, Field()] = None
+    fullname: Annotated[str | None, Field()] = None
+    username: Annotated[str | None, Field()] = None
+    password: Annotated[str | None, Field()] = None
 
 
 class UserDetailResponseSchema(BaseModel):
-  id: UUID
-  fullname: str
-  username: str
+    id: UUID
+    fullname: str
+    username: str
 
-  model_config = {"from_attributes": True}
+    model_config = {"from_attributes": True}
 
 
 class UserListResponseSchema(BaseModel):
-  users: list[UserDetailResponseSchema]
+    users: list[UserDetailResponseSchema]
