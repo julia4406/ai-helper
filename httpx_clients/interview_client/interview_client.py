@@ -1,10 +1,17 @@
 from functools import lru_cache
+from uuid import UUID
 
 import httpx
 
-from app.api.schemas.user import UserCreateResponseSchema, UserCreateSchema
-from httpx_clients.interview_client.config import InterviewAPISettings, \
+from app.api.schemas.user import (
+    UserCreateResponseSchema,
+    UserCreateSchema
+)
+from app.api.schemas.user_profile import UserProfileCreateSchema
+from httpx_clients.interview_client.config import (
+    InterviewAPISettings,
     get_interview_settings
+)
 
 
 class InterviewClient:
@@ -20,6 +27,26 @@ class InterviewClient:
         )
         response.raise_for_status()
         return UserCreateResponseSchema(**response.json())
+
+    async def upload_cv(
+            self,
+            user_id: UUID,
+            cv_file: bytes,
+            filename: str
+    ) -> UserProfileCreateSchema:
+        files = {
+            "cv_file": (filename, cv_file, "application/pdf")
+        }
+        data = {"user_id": str(user_id)}
+        response = await self._client.post(
+            "/user_profiles", data=data, files=files
+        )
+        response.raise_for_status()
+        # return UserProfileCreateSchema(**response.json())
+
+        return response.json()
+
+######################################################################
 
     async def close(self):
         await self._client.aclose()

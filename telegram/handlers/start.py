@@ -1,7 +1,7 @@
 from aiogram import Router, types
 from aiogram.filters import CommandStart
 
-from telegram.keyboards.inline.menu import main_keyboard
+from telegram.keyboards.menu import main_keyboard
 
 router = Router(name="start")
 

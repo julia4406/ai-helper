@@ -9,15 +9,17 @@ settings = get_interview_settings()
 def main_keyboard() -> InlineKeyboardMarkup:
     """Use in main menu."""
     builder = InlineKeyboardBuilder()
-    builder.button(
-        text="LogIn",
-        callback_data="start"
-    )
+
     builder.button(
         text="📝 Register",
         web_app=WebAppInfo(
             url=f"{settings.BASE_URL}/webapp"
         )
     )
+    builder.button(
+        text="🧠 Upload CV",
+        callback_data="upload_cv"
+    )
 
+    builder.adjust(1)
     return builder.as_markup()

@@ -1,0 +1,37 @@
+from aiogram import Router, types
+
+from app.exceptions import ObjectNotFoundException
+from httpx_clients.interview_client.interview_client import get_client
+from telegram.keyboards.menu import main_keyboard
+from telegram.utils.dependencies_from_backend import provide_user_service
+
+router = Router(name="upload_cv")
+client = get_client()
+
+@router.callback_query(lambda c: c.data == "upload_cv")
+async def start_upload_cv(callback: types.CallbackQuery):
+    await callback.answer()
+    await callback.message.answer("📎 Send pdf-file with your CV.")
+
+
+@router.message(lambda message: message.document is not None)
+async def handle_upload_cv(message: types.Message):
+    telegram_id = str(message.from_user.id)
+    try:
+        user_service = await provide_user_service()
+        user_id = await user_service.get_user_by_telegram_id(telegram_id)
+
+        document = message.document
+        file = await message.bot.get_file(document.file_id)
+        file_path = file.file_path
+        file_bytes = await message.bot.download_file(file_path)
+
+        result = await client.upload_cv(
+            user_id=user_id,
+            cv_file=file_bytes.read(),
+            filename=document.file_name
+        )
+        await message.answer("✅ CV uploaded!", reply_markup=main_keyboard())
+
+    except ObjectNotFoundException as e:
+        await message.answer("❌ User didn't found. Register!")

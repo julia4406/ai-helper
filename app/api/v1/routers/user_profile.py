@@ -1,5 +1,5 @@
 from uuid import UUID
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, Form
 
 from app.api.dependencies import ProfileServiceDep, UserServiceDep
 from app.api.schemas.user_profile import UserProfileCreateSchema
@@ -9,8 +9,8 @@ router = APIRouter(tags=["User profiles"], prefix="/user_profiles")
 
 @router.post("")
 async def generate_user_profile(
-    user_id: UUID,
     profile_service: ProfileServiceDep,
+    user_id: UUID = Form(...),
     cv_file: UploadFile = File(...),
 ):
     profile_data = UserProfileCreateSchema(

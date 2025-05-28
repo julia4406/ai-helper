@@ -26,6 +26,14 @@ class UserService:
             raise ObjectNotFoundException("User", user_id)
         return user
 
+    async def get_user_by_telegram_id(self, telegram_id: str) -> UUID:
+        user = await self._user_repo.get_user_by_field(
+            "telegram_id", telegram_id
+        )
+        if not user:
+            raise ObjectNotFoundException("User", telegram_id)
+        return user.id
+
     async def update_user(self, user_id: UUID, user_upd: UserUpdateSchema):
         return await self._user_repo.update_user(user_id=user_id, user_upd=user_upd)
 
