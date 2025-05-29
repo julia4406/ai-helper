@@ -1,3 +1,6 @@
+import json
+
+import httpx
 from aiogram import Router, types
 
 from app.exceptions import ObjectNotFoundException
@@ -11,7 +14,7 @@ client = get_client()
 @router.callback_query(lambda c: c.data == "upload_cv")
 async def start_upload_cv(callback: types.CallbackQuery):
     await callback.answer()
-    await callback.message.answer("📎 Send pdf-file with your CV.")
+    await callback.message.answer("📎 Send pdf-file with your CV")
 
 
 @router.message(lambda message: message.document is not None)
@@ -34,4 +37,21 @@ async def handle_upload_cv(message: types.Message):
         await message.answer("✅ CV uploaded!", reply_markup=main_keyboard())
 
     except ObjectNotFoundException as e:
-        await message.answer("❌ User didn't found. Register!")
+        await message.answer(
+            "❌ User didn't found. Register!",
+            reply_markup=main_keyboard()
+        )
+
+    except httpx.HTTPStatusError as e:
+        try:
+            error_detail = e.response.json().get("detail", "Unknown error")
+        except  (json.JSONDecodeError, ValueError, TypeError):
+            error_detail = e.response.text
+
+        await message.answer(
+            "⚠️ Sorry, we couldn't process your CV.\n\n"
+            f"❌ {str(error_detail)}\n\n"
+            "📄 Please upload a valid CV file in PDF format that contains "
+            "information about your work experience, skills, and job history.",
+            reply_markup=main_keyboard()
+        )

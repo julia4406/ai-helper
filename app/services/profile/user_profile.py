@@ -1,5 +1,7 @@
 from uuid import UUID
 
+from fastapi import HTTPException
+
 from app.api.schemas.user_profile import UserProfileCreateSchema, \
     UserProfileSchema
 from app.clients.gemini.client import GeminiClient
@@ -33,14 +35,18 @@ class ProfileService:
             tools=[SaveUserProfile.to_function_definition()]
         )
 
-        if tool_result:
-            user_profile = await self._profile_repo.create_new_profile(
-                profile_data=tool_result
+        if not tool_result:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Failed to generate user profile. "
+                       f"Gemini explanation: {text}"
             )
 
-            return user_profile
+        user_profile = await self._profile_repo.create_new_profile(
+            profile_data=tool_result
+        )
 
-        return RuntimeError("Failed to generate user profile")
+        return user_profile
 
     async def get_profiles(self, user_id: UUID) -> list[UserProfileSchema]:
         return await self._profile_repo.get_user_profiles(user_id)
