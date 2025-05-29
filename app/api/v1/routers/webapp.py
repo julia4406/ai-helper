@@ -30,6 +30,16 @@ async def serve_webapp(request: Request):
     })
 
 
+@router.get("/manual", response_class=HTMLResponse)
+async def get_interview_data(request: Request):
+    settings = get_interview_settings()
+    return templates.TemplateResponse(
+        "templates/profile_data.html", {
+        "request": request,
+        "INTERVIEW_BASE_URL": settings.BASE_URL,
+    })
+
+
 @router.post("/telegram/send_start_command/")
 async def send_start_command(data: StartCommandData):
     settings = get_tg_settings()

@@ -3,6 +3,7 @@ from aiogram.filters import CommandStart
 
 from httpx_clients.interview_client.interview_client import get_client
 from telegram.handlers.start_handler import start_message
+from telegram.keyboards.main_menu import main_keyboard
 
 router = Router(name="start")
 client = get_client()
@@ -16,4 +17,12 @@ async def start_handler(message: types.Message) -> None:
     await message.answer(
             text,
             reply_markup=reply_markup
+    )
+
+
+@router.callback_query(lambda c: c.data == "return_to_start")
+async def return_to_start(callback: types.CallbackQuery):
+    await callback.message.edit_text(
+        "👋 Welcome back! What do you want to do?",
+        reply_markup=main_keyboard()
     )

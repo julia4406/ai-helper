@@ -3,6 +3,7 @@ from uuid import UUID
 
 import httpx
 
+from app.api.schemas.interview import InterviewCreateSchema
 from app.api.schemas.user import (
     UserCreateResponseSchema,
     UserCreateSchema
@@ -43,6 +44,17 @@ class InterviewClient:
         )
         response.raise_for_status()
         return response.json()
+
+    async def create_interview(
+            self,
+            interview_data: InterviewCreateSchema
+    ) -> InterviewCreateSchema:
+        response = await self._client.post(
+            "/interviews", json=interview_data.model_dump()
+        )
+        response.raise_for_status()
+        return InterviewCreateSchema(**response.json())
+
 
 ######################################################################
 
