@@ -42,8 +42,6 @@ class InterviewClient:
             "/user_profiles", data=data, files=files
         )
         response.raise_for_status()
-        # return UserProfileCreateSchema(**response.json())
-
         return response.json()
 
 ######################################################################

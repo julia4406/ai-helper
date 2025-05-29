@@ -5,7 +5,7 @@ from aiogram import Router, types
 
 from app.exceptions import ObjectNotFoundException
 from httpx_clients.interview_client.interview_client import get_client
-from telegram.keyboards.menu import main_keyboard
+from telegram.keyboards.main_menu import main_keyboard
 from telegram.utils.dependencies_from_backend import provide_user_service
 
 router = Router(name="upload_cv")

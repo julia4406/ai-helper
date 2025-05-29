@@ -1,9 +1,22 @@
-# app/routes/webapp.py
+import json
+
+import httpx
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from httpx_clients.interview_client.config import get_interview_settings
+from telegram.core.config import get_tg_settings
+
+from pydantic import BaseModel
+
+from telegram.handlers.start_handler import start_message
+
+
+class StartCommandData(BaseModel):
+    chat_id: int
+    text: str
+
 
 router = APIRouter(tags=["WebApp"], prefix="/webapp")
 templates = Jinja2Templates(directory="app")
@@ -15,3 +28,26 @@ async def serve_webapp(request: Request):
         "request": request,
         "INTERVIEW_BASE_URL": settings.BASE_URL,
     })
+
+
+@router.post("/telegram/send_start_command/")
+async def send_start_command(data: StartCommandData):
+    settings = get_tg_settings()
+
+    telegram_id = str(data.chat_id)
+    text, reply_markup = await start_message(telegram_id)
+    print("text", text)
+    print("reply_markup", reply_markup)
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            f"https://api.telegram.org/bot{settings.TOKEN}/sendMessage",
+            json={
+                "chat_id": telegram_id,
+                "text": text,
+                "reply_markup": reply_markup.model_dump(exclude_none=True)
+            }
+        )
+        print(response.text, response.content)
+
+    return {"status": "ok"}
