@@ -15,10 +15,10 @@ def main_keyboard() -> InlineKeyboardMarkup:
         callback_data="upload_cv"
     )
 
-    # builder.button(
-    #     text="🧑‍💻 Interview",
-    #     callback_data=""
-    # )
+    builder.button(
+        text="🧑‍💻 Interview",
+        callback_data="interview"
+    )
 
     builder.adjust(1)
     return builder.as_markup()
