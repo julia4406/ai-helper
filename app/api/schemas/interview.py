@@ -24,8 +24,16 @@ class InterviewCreateSchema(BaseModel):
     job_position: Annotated[str | None, Field()] = None
     experience: Annotated[float | None, Field()] = None
     tech_stack: Annotated[str | None, Field()] = None
-    user_id: Annotated[UUID, Field()]
+    user_id: Annotated[UUID | None, Field()] = None
+    telegram_id: Annotated[str | None, Field()] = None
     profile_id: Annotated[UUID | None, Field()] = None
+
+    @model_validator(mode="after")
+    def validate_id_presence(self):
+        if not self.telegram_id and not self.user_id:
+            raise ValueError("Impossible to identify user!"
+                             " Please login or register.")
+        return self
 
     @model_validator(mode="after")
     def set_title_if_none(self) -> "InterviewCreateSchema":

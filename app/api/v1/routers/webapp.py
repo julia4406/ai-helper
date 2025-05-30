@@ -5,6 +5,8 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
+from app.api.dependencies import UserServiceDep
+from app.api.schemas.interview import InterviewCreateSchema
 from httpx_clients.interview_client.config import get_interview_settings
 from telegram.core.config import get_tg_settings
 
@@ -16,6 +18,13 @@ from telegram.handlers.start_handler import start_message
 class StartCommandData(BaseModel):
     chat_id: int
     text: str
+
+
+class ManualInterviewData(BaseModel):
+    job_position: str
+    experience: float
+    tech_stack: str
+    telegram_id: str
 
 
 router = APIRouter(tags=["WebApp"], prefix="/webapp")
@@ -30,11 +39,10 @@ async def serve_webapp(request: Request):
     })
 
 
-@router.get("/manual", response_class=HTMLResponse)
-async def get_interview_data(request: Request):
+@router.get("/interview-form", response_class=HTMLResponse)
+async def serve_manual_webapp(request: Request):
     settings = get_interview_settings()
-    return templates.TemplateResponse(
-        "templates/profile_data.html", {
+    return templates.TemplateResponse("templates/profile_data.html", {
         "request": request,
         "INTERVIEW_BASE_URL": settings.BASE_URL,
     })

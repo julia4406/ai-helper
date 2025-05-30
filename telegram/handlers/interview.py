@@ -20,6 +20,6 @@ async def start_interview_from_cv(callback: types.CallbackQuery):
 
 
 @router.callback_query(lambda c: c.data == "start_interview_manually")
-async def start_interview_manually(callback: types.CallbackQuery):
+async def start_interview_manually(callback: types.Message):
     pass
 

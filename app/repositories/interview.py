@@ -20,7 +20,7 @@ class InterviewRepository(BaseRepository):
     ) -> InterviewDetailSchema:
         logger.info(f"Creating interview(repo): {data}")
         new_interview = await self.add(
-            obj_data=data.model_dump(exclude={"profile_id"}),
+            obj_data=data.model_dump(exclude={"profile_id", "telegram_id"}),
             load_options=[selectinload(self.model.questions)]
         )
         return new_interview.to_dto()

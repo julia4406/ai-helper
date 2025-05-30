@@ -17,7 +17,7 @@ def interview_keyboard() -> InlineKeyboardMarkup:
     builder.button(
         text="✒️ Manual setup",
         web_app=WebAppInfo(
-            url=f"{settings.BASE_URL}/webapp/manual"
+            url=f"{settings.BASE_URL}/webapp/interview-form"
         )
     )
 
