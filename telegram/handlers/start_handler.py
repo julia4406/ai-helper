@@ -22,8 +22,8 @@ async def start_message(
         try:
             user_id = await user_service.get_user_by_telegram_id(telegram_id)
             await state.clear()
-
             await state.update_data(user_id=user_id)
+
             text = "👋 Welcome back! What do you want to do?"
             reply_markup=main_keyboard()
 

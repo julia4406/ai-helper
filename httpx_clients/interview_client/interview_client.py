@@ -51,7 +51,7 @@ class InterviewClient:
             interview_data: InterviewCreateSchema
     ) -> InterviewDetailSchema:
         response = await self._client.post(
-            "/interviews", json=interview_data.model_dump()
+            "/interviews", json=interview_data.model_dump(mode="json")
         )
         response.raise_for_status()
         return InterviewDetailSchema(**response.json())
@@ -64,6 +64,14 @@ class InterviewClient:
         response.raise_for_status()
         raw_data = response.json()
         return [UserProfileSchema(**item) for item in raw_data]
+
+
+    async def get_interview(self, interview_id: UUID):
+        response = await self._client.get(
+            "/interviews/{interview_id}"
+        )
+        response.raise_for_status()
+        return InterviewDetailSchema(**response.json())
 
 
 ######################################################################
