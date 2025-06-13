@@ -5,21 +5,22 @@ from fastapi import APIRouter
 from app.api.dependencies import InterviewServiceDep, UserServiceDep
 from app.api.schemas.answer import AnswerCreateSchema
 from app.api.schemas.interview import InterviewCreateSchema, \
-    InterviewFinishResponseSchema
+    InterviewFinishResponseSchema, InterviewDetailSchema
 
 router = APIRouter(tags=["Interviews"], prefix="/interviews")
 
-@router.post("", response_model=InterviewCreateSchema)
+@router.post("", response_model=InterviewDetailSchema)
 async def create_interview(
     interview_data: InterviewCreateSchema,
     interview_service: InterviewServiceDep,
     user_service: UserServiceDep
-) -> InterviewCreateSchema:
+) -> InterviewDetailSchema:
     if not interview_data.user_id and interview_data.telegram_id:
         user_id = await user_service.get_user_by_telegram_id(
             interview_data.telegram_id)
         interview_data.user_id = user_id
     new_interview = await interview_service.create_interview(interview_data)
+
     return new_interview
 
 

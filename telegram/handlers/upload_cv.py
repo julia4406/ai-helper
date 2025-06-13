@@ -9,7 +9,7 @@ from app.repositories.user import UserRepository
 from app.services.user import UserService
 from httpx_clients.interview_client.interview_client import get_client
 from telegram.keyboards.main_menu import main_keyboard
-from telegram.utils.dependencies_from_backend import provide_user_service
+
 
 router = Router(name="upload_cv")
 client = get_client()

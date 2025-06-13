@@ -1,5 +1,4 @@
-from aiogram import Router, types
-from aiogram.filters import CommandStart
+from aiogram import Router
 from aiogram.types import InlineKeyboardMarkup
 
 from app.database.core.engine import async_session_maker
@@ -8,7 +7,6 @@ from app.services.user import UserService
 from httpx_clients.interview_client.interview_client import get_client
 from telegram.keyboards.main_menu import main_keyboard
 from telegram.keyboards.start_menu import start_menu
-from telegram.utils.dependencies_from_backend import provide_user_service
 
 router = Router(name="start")
 client = get_client()

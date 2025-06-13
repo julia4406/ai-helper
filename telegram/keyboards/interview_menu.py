@@ -12,7 +12,7 @@ def interview_keyboard() -> InlineKeyboardMarkup:
 
     builder.button(
         text="📰 Get from my CV profile",
-        callback_data="start_interview_from_cv" # викликати вибір профайла
+        callback_data="start_interview_from_cv"  # викликати вибір профайла
     )
     builder.button(
         text="✒️ Manual setup",

@@ -44,3 +44,4 @@ script (керує поведінкою форми) and css (for later beauty)
 and handler for it in handlers
 
 - **ToDO**: When user already exists - just update its telegram_id
+If interview already started - user has two options - continue interview or finish

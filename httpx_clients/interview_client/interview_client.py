@@ -3,12 +3,13 @@ from uuid import UUID
 
 import httpx
 
-from app.api.schemas.interview import InterviewCreateSchema
+from app.api.schemas.interview import InterviewCreateSchema, InterviewDetailSchema
 from app.api.schemas.user import (
     UserCreateResponseSchema,
     UserCreateSchema
 )
-from app.api.schemas.user_profile import UserProfileCreateSchema
+from app.api.schemas.user_profile import UserProfileCreateSchema, \
+    UserProfileSchema
 from httpx_clients.interview_client.config import (
     InterviewAPISettings,
     get_interview_settings
@@ -48,12 +49,21 @@ class InterviewClient:
     async def create_interview(
             self,
             interview_data: InterviewCreateSchema
-    ) -> InterviewCreateSchema:
+    ) -> InterviewDetailSchema:
         response = await self._client.post(
             "/interviews", json=interview_data.model_dump()
         )
         response.raise_for_status()
-        return InterviewCreateSchema(**response.json())
+        return InterviewDetailSchema(**response.json())
+
+    async def get_user_profiles(self, user_id: UUID) -> list[UserProfileSchema]:
+        user_id = {"user_id": str(user_id)}
+        response = await self._client.get(
+            "/user_profiles", params=user_id
+        )
+        response.raise_for_status()
+        raw_data = response.json()
+        return [UserProfileSchema(**item) for item in raw_data]
 
 
 ######################################################################

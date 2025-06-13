@@ -5,8 +5,6 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from app.api.dependencies import UserServiceDep
-from app.api.schemas.interview import InterviewCreateSchema
 from httpx_clients.interview_client.config import get_interview_settings
 from telegram.core.config import get_tg_settings
 
@@ -54,8 +52,6 @@ async def send_start_command(data: StartCommandData):
 
     telegram_id = str(data.chat_id)
     text, reply_markup = await start_message(telegram_id)
-    print("text", text)
-    print("reply_markup", reply_markup)
 
     async with httpx.AsyncClient() as client:
         response = await client.post(
@@ -66,6 +62,5 @@ async def send_start_command(data: StartCommandData):
                 "reply_markup": reply_markup.model_dump(exclude_none=True)
             }
         )
-        print(response.text, response.content)
 
     return {"status": "ok"}

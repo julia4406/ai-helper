@@ -66,9 +66,12 @@ class InterviewService:
             new_interview = await self._interview_repo.create_interview(data=data)
             logger.info(f"Finally: created new interview {new_interview}")
 
-            await self.create_question(new_interview, is_first=True)
+            question = await self.create_question(new_interview, is_first=True)
+            full_interview = await self._interview_repo.get_interview_by_id(
+                new_interview.id
+            )
 
-            return new_interview
+            return full_interview
 
         except ForeignKeyViolationError as e:
             logger.error(f"Cannot create new interview.\n"
