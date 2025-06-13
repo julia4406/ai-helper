@@ -30,33 +30,31 @@ async def start_interview_from_cv(
         callback_query: CallbackQuery,
         state: FSMContext
 ):
-    tg_user = callback_query.from_user
-    async with async_session_maker() as session:
-        user_service = UserService(UserRepository(session=session))
-        user_id = await user_service.get_user_by_telegram_id(str(tg_user.id))
+    tg_data = await state.get_data()
+    user_id = tg_data.get("user_id")
 
-        user_profiles = await client.get_user_profiles(user_id)
+    user_profiles = await client.get_user_profiles(user_id)
 
-        if not user_profiles:
-            text = await callback_query.message.answer(
-                "You don't have any uploaded CV yet."
-            )
-            reply_markup=interview_keyboard()
-            return text, reply_markup
-
-        buttons = []
-        for profile in user_profiles:
-            buttons.append(
-                InlineKeyboardButton(
-                    text=profile.job_position,
-                    callback_data=f"select_cv: {profile.id}"
-                )
-            )
-        profile_keyboard = InlineKeyboardMarkup(inline_keyboard=[buttons])
-        await callback_query.message.answer(
-            "Choose what profile you want to use:",
-            reply_markup=profile_keyboard
+    if not user_profiles:
+        text = await callback_query.message.answer(
+            "You don't have any uploaded CV yet."
         )
+        reply_markup=interview_keyboard()
+        return text, reply_markup
+
+    buttons = []
+    for profile in user_profiles:
+        buttons.append(
+            InlineKeyboardButton(
+                text=profile.job_position,
+                callback_data=f"select_cv: {profile.id}"
+            )
+        )
+    profile_keyboard = InlineKeyboardMarkup(inline_keyboard=[buttons])
+    await callback_query.message.answer(
+        "Choose what profile you want to use:",
+        reply_markup=profile_keyboard
+    )
 
 
 # Відповідь на натискання кнопки - має створюватись інтерв'ю і видаватись в бота

@@ -1,4 +1,5 @@
 from aiogram import Router
+from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardMarkup
 
 from app.database.core.engine import async_session_maker
@@ -12,12 +13,17 @@ router = Router(name="start")
 client = get_client()
 
 
-async def start_message(telegram_id: str) -> tuple[str, InlineKeyboardMarkup]:
+async def start_message(
+        telegram_id: str, state: FSMContext
+) -> tuple[str, InlineKeyboardMarkup]:
     async with async_session_maker() as session:
         user_service = UserService(UserRepository(session=session))
 
         try:
-            await user_service.get_user_by_telegram_id(telegram_id)
+            user_id = await user_service.get_user_by_telegram_id(telegram_id)
+            await state.clear()
+
+            await state.update_data(user_id=user_id)
             text = "👋 Welcome back! What do you want to do?"
             reply_markup=main_keyboard()
 

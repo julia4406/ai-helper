@@ -1,5 +1,6 @@
 from aiogram import Router, types
 from aiogram.filters import CommandStart
+from aiogram.fsm.context import FSMContext
 
 from httpx_clients.interview_client.interview_client import get_client
 from telegram.handlers.start_handler import start_message
@@ -10,10 +11,11 @@ client = get_client()
 
 
 @router.message(CommandStart())
-async def start_handler(message: types.Message) -> None:
+async def start_handler(message: types.Message, state: FSMContext) -> None:
 
     telegram_id = str(message.from_user.id)
-    text, reply_markup = await start_message(telegram_id)
+
+    text, reply_markup = await start_message(telegram_id, state)
     await message.answer(
             text,
             reply_markup=reply_markup
