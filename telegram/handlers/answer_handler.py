@@ -48,13 +48,24 @@ async def process_answer(
     )
 
     await message.answer(
-        text=f"XoXoXo You fail\n ▫️▫️▫️▫️▫️▫️▫️▫️▫️▫️\n{rated_answer}"
+        text=f"Thanks for answer. I can score it in "
+             f"{rated_answer.score}/5.0 points\n "
+             f"My feedback: {rated_answer.feedback}"
     )
 
+    await message.answer(
+        text=f"Ok, next question 😊"
+    )
 
-    # interview = await client.get_interview(interview_id)
-    # # TODO тут задати наступне питання і показати меню для відповіді
-    # await callback.message.answer(
-    #     text="Ok. Here is the next question: ",
-    #     reply_markup=question_keyboard()
-    # )
+    interview = await client.get_interview(interview_id)
+
+    question = interview.questions[-1]
+    await state.update_data(
+        interview_id=interview.id,
+        question_id=question.id
+    )
+
+    await message.answer(
+        f"Question: {question.text}",
+        reply_markup=question_keyboard()
+    )

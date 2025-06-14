@@ -17,7 +17,8 @@ client = get_client()
 @router.callback_query(lambda c: c.data == "upload_cv")
 async def start_upload_cv(callback: types.CallbackQuery):
     await callback.answer()
-    await callback.message.answer("📎 Send pdf-file with your CV")
+    await callback.message.answer("📎 Send pdf-file with your CV and wait when "
+                                  "it's done.")
 
 
 @router.message(lambda message: message.document is not None)

@@ -2,6 +2,7 @@ from functools import lru_cache
 from uuid import UUID
 
 import httpx
+from loguru import logger
 
 from app.api.schemas.answer import AnswerCreateSchema, AnswerDetailSchema
 from app.api.schemas.interview import InterviewCreateSchema, InterviewDetailSchema
@@ -58,6 +59,7 @@ class InterviewClient:
             "/interviews", json=interview_data.model_dump(mode="json")
         )
         response.raise_for_status()
+        logger.info(f"🎤 Creating interview: {interview_data}")
         return InterviewDetailSchema(**response.json())
 
     async def get_user_profiles(self, user_id: UUID) -> list[UserProfileSchema]:
