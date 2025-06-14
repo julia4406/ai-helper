@@ -121,8 +121,10 @@ class InterviewService:
 
         return interview
 
-    async def create_answer_for_question(self, answer_data: AnswerCreateSchema,
-                                         interview_id: UUID):
+    async def create_answer_for_question(
+            self, answer_data: AnswerCreateSchema,
+            interview_id: UUID
+    ):
         await self._answer_repo.create_answer(answer_data=answer_data)
         interview_info = await self.get_interview_by_id(interview_id)
         rated_answer = await self.rate_answer(interview_info)

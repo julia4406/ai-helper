@@ -26,7 +26,7 @@ def interview_keyboard() -> InlineKeyboardMarkup:
         callback_data="upload_cv"
     )
     builder.button(
-        text="↪️ Return",
+        text="↪️ Return 🏠",
         callback_data="return_to_start"
     )
 

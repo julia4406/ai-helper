@@ -11,7 +11,7 @@ def question_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.button(
-        text="✏️ Answer",  # чекатиме відповідь у чат
+        text="✏️ Answer",
         callback_data="answer"
     )
     builder.button(
@@ -19,7 +19,7 @@ def question_keyboard() -> InlineKeyboardMarkup:
         callback_data="finish_interview"
     )
     builder.button(
-        text="↪️ Return",  # поверне поки на головну
+        text="↪️ Return 🏠",  # поверне поки на головну
         callback_data="return_to_start"
     )
 

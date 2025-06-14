@@ -3,6 +3,7 @@ from uuid import UUID
 
 import httpx
 
+from app.api.schemas.answer import AnswerCreateSchema, AnswerDetailSchema
 from app.api.schemas.interview import InterviewCreateSchema, InterviewDetailSchema
 from app.api.schemas.user import (
     UserCreateResponseSchema,
@@ -19,7 +20,10 @@ from httpx_clients.interview_client.config import (
 class InterviewClient:
     def __init__(self, settings: InterviewAPISettings):
         self._base_url = settings.BASE_URL.rstrip("/")
-        self._client = httpx.AsyncClient(base_url=self._base_url)
+        self._client = httpx.AsyncClient(
+            base_url=self._base_url,
+            timeout = 10.0
+        )
 
     async def create_user(
             self, user_data: UserCreateSchema
@@ -68,10 +72,22 @@ class InterviewClient:
 
     async def get_interview(self, interview_id: UUID):
         response = await self._client.get(
-            "/interviews/{interview_id}"
+            f"/interviews/{interview_id}"
         )
         response.raise_for_status()
         return InterviewDetailSchema(**response.json())
+
+    async def answer_question(
+            self,
+            question_data: AnswerCreateSchema,
+            interview_id: UUID
+    ):
+        response = await self._client.post(
+            f"/interviews/{interview_id}/questions/answer",
+            json=question_data.model_dump(mode="json")
+        )
+        response.raise_for_status()
+        return AnswerDetailSchema(**response.json())
 
 
 ######################################################################

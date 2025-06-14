@@ -71,7 +71,7 @@ async def start_interview_from_cv(
 async def handle_cv_selection(callback_query: CallbackQuery, state: FSMContext):
     """
     After choosing CV interview session will be created
-    and question will be shown
+    and question and buttons (answer, finish, return) will be shown
     """
 
     profile_id = callback_query.data.split(":")[1].strip()
@@ -85,19 +85,23 @@ async def handle_cv_selection(callback_query: CallbackQuery, state: FSMContext):
     )
 
     interview = await client.create_interview(interview_data=interview_data)
+
     await callback_query.message.answer(
         f"🚀 Let's start our interview on {interview.job_position}.\n"
         "I will ask you and give the next question only after "
         "answering previous. Good luck. 🤞"
     )
 
-    question = interview.questions[0].text
-
-    await callback_query.message.answer(
-        f"Question: {question}",
-        reply_markup=question_keyboard()
+    question = interview.questions[0]
+    await state.update_data(
+        interview_id=interview.id,
+        question_id=question.id
     )
 
+    await callback_query.message.answer(
+        f"Question: {question.text}",
+        reply_markup=question_keyboard()
+    )
 
 
 @router.callback_query(lambda c: c.data == "start_interview_manually")
