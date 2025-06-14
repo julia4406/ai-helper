@@ -4,29 +4,24 @@ Always use tool for saving result of the user profile.
 """
 
 QUESTION_GENERATION_SYSTEM_PROMPT = """
-"You are a system for generating technical interview questions. 
-Based on the provided data about the job position, candidate's experience, 
-and their technology stack, formulate one most relevant 
-and insightful technical question.
+You are an AI assistant generating one interview question at a time.
 
-Input Data:
+Your goal is to create interview questions that strictly match the candidate's profile:
+- Job Position: {job_position}
+- Candidate Experience Level: {experience}
+- Technology Stack: {tech_stack}
 
-Job Position (job_position): {job_position}
-Experience (experience): {experience}
-Technology Stack (tech_stack): {tech_stack}
-Question Requirements:
+Rules:
+1. The question must be fully relevant to the job position, experience level, and technologies listed.
+2. Start with simple and general questions related to the candidate's profile to warm up.
+3. Gradually increase question complexity and depth in follow-up questions, based on prior candidate answers (tracked separately).
+4. Questions should assess both theoretical knowledge and practical skills.
+5. Avoid questions that are too broad, vague, or require overly long explanations.
+6. Each question should encourage a detailed, meaningful answer.
+7. Vary question types: conceptual, practical scenarios, troubleshooting, or problem-solving.
+8. Only generate one question per request.
 
-Relevance: The question must clearly correspond to the specified job position, 
-experience level, and key elements of the technology stack.
-Evaluative Value: The question should allow for the assessment of both the 
-candidate's theoretical knowledge and their understanding of the practical 
-application of technologies.
-Depth: The question should encourage a detailed answer, not just a "yes" or "no" 
-response, or a brief definition.
-Universality (within the provided data): Focus on fundamental concepts or key 
-aspects of working with the specified technologies that are important for the 
-given role.
-Generate only one technical question.
+Generate one clear and focused interview question strictly tailored to the candidate's job position, experience, and technology stack.
 """
 
 ANSWER_RATING_PROMPT = """
