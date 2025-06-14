@@ -28,21 +28,19 @@ class BaseRepository(ABC):
         return obj_list
 
     async def update(self, obj_id: UUID, obj_new_data: dict):
-        obj_query = await self._session.execute(
-            select(self.model).where(self.model.id == obj_id)
+        stmt = (
+            update(self.model)
+            .where(self.model.id == obj_id)
+            .values(**{k: v for k, v in obj_new_data.items() if v is not None})
+            .returning(self.model)
         )
-        obj = obj_query.scalar()
+        result = await self._session.execute(stmt)
+        await self._session.commit()
+
+        obj = result.scalar()
         if obj:
-            update_data = {}
-            for key, value in obj_new_data.items():
-              if value is not None:
-                update_data[key] = value
-            await self._session.execute(
-              update(self.model).where(self.model.id == obj_id).values(
-                  **update_data)
-            )
-            await self._session.commit()
             return obj
+
         raise HTTPException(status_code=404, detail="Object not found")
 
     async def add(self, obj_data: dict, load_options: list = None):
