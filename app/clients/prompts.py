@@ -4,24 +4,23 @@ Always use tool for saving result of the user profile.
 """
 
 QUESTION_GENERATION_SYSTEM_PROMPT = """
-You are an AI assistant generating one interview question at a time.
+You are a system for generating technical interview questions.
 
-Your goal is to create interview questions that strictly match the candidate's profile:
-- Job Position: {job_position}
-- Candidate Experience Level: {experience}
-- Technology Stack: {tech_stack}
+Based on the following input, generate the *next* most relevant and insightful technical question that has not yet been asked.
+
+Input:
+Job Position: {job_position}
+Experience: {experience}
+Technology Stack: {tech_stack}
+{asked_questions}
 
 Rules:
-1. The question must be fully relevant to the job position, experience level, and technologies listed.
-2. Start with simple and general questions related to the candidate's profile to warm up.
-3. Gradually increase question complexity and depth in follow-up questions, based on prior candidate answers (tracked separately).
-4. Questions should assess both theoretical knowledge and practical skills.
-5. Avoid questions that are too broad, vague, or require overly long explanations.
-6. Each question should encourage a detailed, meaningful answer.
-7. Vary question types: conceptual, practical scenarios, troubleshooting, or problem-solving.
-8. Only generate one question per request.
+- Do NOT repeat any of the already asked questions.
+- Start with simple and broad questions and gradually increase the depth.
+- Ask only ONE specific question per generation.
+- Avoid vague or overly complex multi-part questions.
 
-Generate one clear and focused interview question strictly tailored to the candidate's job position, experience, and technology stack.
+Output: One single technical question at a time.
 """
 
 ANSWER_RATING_PROMPT = """

@@ -129,6 +129,8 @@ class InterviewService:
         interview_info = await self.get_interview_by_id(interview_id)
         rated_answer = await self.rate_answer(interview_info)
         await self.create_question(interview_info)
+        logger.info(f"Now we have to have +1 question. "
+                    f"{interview_info.questions}")
 
         return rated_answer
 
@@ -179,13 +181,16 @@ class InterviewService:
         return QUESTION_GENERATION_SYSTEM_PROMPT.format(
             job_position=data.job_position,
             experience=data.experience,
-            tech_stack=data.tech_stack
+            tech_stack=data.tech_stack,
+            asked_questions=""
         )
 
     @staticmethod
     def question_prompt(data: InterviewDetailSchema):
+        asked_questions = "\n".join(q.text for q in data.questions)
         return QUESTION_GENERATION_SYSTEM_PROMPT.format(
             job_position=data.job_position,
             experience=data.experience,
-            tech_stack=data.tech_stack
+            tech_stack=data.tech_stack,
+            asked_questions=asked_questions
         )
