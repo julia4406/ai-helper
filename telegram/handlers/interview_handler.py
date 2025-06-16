@@ -8,6 +8,7 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton
 )
+from loguru import logger
 
 from app.api.schemas.interview import InterviewCreateSchema
 
@@ -42,6 +43,7 @@ async def start_interview_from_cv(
     """
     tg_data = await state.get_data()
     user_id = tg_data.get("user_id")
+    logger.info(f"User ID getted from FSM: {user_id}")
 
     user_profiles = await client.get_user_profiles(user_id)
 
@@ -78,6 +80,7 @@ async def handle_cv_selection(callback_query: CallbackQuery, state: FSMContext):
     await state.update_data(profile_id=profile_id)
     tg_data = await state.get_data()
     user_id = tg_data.get("user_id")
+    logger.info(f"user hits choose cv button: {user_id}")
 
     interview_data = InterviewCreateSchema(
         user_id=str(user_id),

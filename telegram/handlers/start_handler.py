@@ -1,6 +1,7 @@
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardMarkup
+from loguru import logger
 
 from app.database.core.engine import async_session_maker
 from app.repositories.user import UserRepository
@@ -23,6 +24,10 @@ async def start_message(
             user_id = await user_service.get_user_by_telegram_id(telegram_id)
             await state.clear()
             await state.update_data(user_id=user_id)
+            data = await state.get_data()
+
+            logger.info(f"Save user ID: {data.get('user_id')}")
+
 
             text = "👋 Welcome back! What do you want to do?"
             reply_markup=main_keyboard()

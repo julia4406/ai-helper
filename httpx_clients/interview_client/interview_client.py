@@ -5,7 +5,8 @@ import httpx
 from loguru import logger
 
 from app.api.schemas.answer import AnswerCreateSchema, AnswerDetailSchema
-from app.api.schemas.interview import InterviewCreateSchema, InterviewDetailSchema
+from app.api.schemas.interview import InterviewCreateSchema, \
+    InterviewDetailSchema, InterviewFinishResponseSchema
 from app.api.schemas.user import (
     UserCreateResponseSchema,
     UserCreateSchema
@@ -58,6 +59,7 @@ class InterviewClient:
         response = await self._client.post(
             "/interviews", json=interview_data.model_dump(mode="json")
         )
+        print("Response: ", response)
         response.raise_for_status()
         logger.info(f"🎤 Creating interview: {interview_data}")
         return InterviewDetailSchema(**response.json())
@@ -90,6 +92,14 @@ class InterviewClient:
         )
         response.raise_for_status()
         return AnswerDetailSchema(**response.json())
+
+    async def finish_interview(
+            self,
+            interview_id: UUID
+    ):
+        response = await self._client.post(f"/interviews/{interview_id}/finish")
+        response.raise_for_status()
+        return InterviewFinishResponseSchema(**response.json())
 
 
 ######################################################################

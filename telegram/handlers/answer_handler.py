@@ -1,8 +1,10 @@
-from aiogram import Router, types
+from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
+from loguru import logger
 
 from app.api.schemas.answer import AnswerCreateSchema
 from httpx_clients.interview_client.interview_client import get_client
+from telegram.keyboards.main_menu import main_keyboard
 from telegram.keyboards.question_menu import question_keyboard
 from telegram.states.interview import InterviewStates
 
@@ -35,13 +37,12 @@ async def process_answer(
     After typing answer into chat-window bot analyzes the answer,
     gives feedback on answer and send the next question
     """
-    answer_text = message.text
     tg_data = await state.get_data()
     interview_id = tg_data.get("interview_id")
     question_id = tg_data.get("question_id")
 
+    answer_text = message.text
     question_data = AnswerCreateSchema(text=answer_text, question_id=question_id)
-
     rated_answer = await client.answer_question(
         question_data,
         interview_id
@@ -54,7 +55,7 @@ async def process_answer(
     )
 
     await message.answer(
-        text=f"Ok, next question 😊"
+        text=f"Next question 😊 👇"
     )
 
     interview = await client.get_interview(interview_id)
@@ -69,3 +70,33 @@ async def process_answer(
         f"Question: {question.text}",
         reply_markup=question_keyboard()
     )
+
+
+@router.callback_query(F.data == "finish_interview")
+async def finish_interview(
+        callback: types.CallbackQuery,
+        state: FSMContext
+):
+    """
+    Close current interview (in database) and
+    return overall interview feedback
+    """
+    data = await state.get_data()
+    user_id = data.get("user_id")
+    profile_id = data.get("profile_id")
+    interview_id = data.get("interview_id")
+    logger.info("we have data: ", data)
+
+    finished_interview_data = await client.finish_interview(
+        interview_id=interview_id
+    )
+    feedback = finished_interview_data.feedback
+
+    await callback.message.answer(
+        text = f"Thank you. Here is short feedback on your interview.\n"
+               f"{feedback}",
+        reply_markup=main_keyboard()
+    )
+
+    # await state.clear()
+    # await state.update_data(user_id=user_id, profile_id=profile_id)

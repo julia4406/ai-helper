@@ -19,7 +19,7 @@ def question_keyboard() -> InlineKeyboardMarkup:
         callback_data="finish_interview"
     )
     builder.button(
-        text="↪️ Return 🏠",  # поверне поки на головну
+        text="↪️ Return 🏠",
         callback_data="return_to_start"
     )
 
